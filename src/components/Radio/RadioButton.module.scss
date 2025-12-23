@@ -1,0 +1,60 @@
+.container_radio {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hidden_input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.radio_visual {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid #868686;
+  background-color: #f9fafb;
+  position: relative;
+  transition: all 0.2s ease-in-out;
+  flex-shrink: 0;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--primary-700);
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.2s ease-in-out;
+  }
+}
+
+.hidden_input:checked + .radio_visual {
+  border-color: var(--primary-700);
+  &::after {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.container_radio[data-disabled="true"] {
+  cursor: not-allowed;
+
+  .label {
+    color: #868686;
+  }
+
+  .hidden_input:not(:checked) + .radio_visual {
+    background-color: var(--neutral-200);
+    border-color: #868686;
+  }
+
+  .hidden_input:checked + .radio_visual {
+    opacity: 0.5;
+  }
+}
