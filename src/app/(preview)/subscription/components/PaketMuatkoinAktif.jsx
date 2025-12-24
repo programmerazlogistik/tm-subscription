@@ -45,7 +45,7 @@ const PaketMuatkoinAktif = () => {
   }, []);
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-[12px] border border-neutral-200 bg-white shadow-sm">
+    <div className="flex flex-col overflow-hidden rounded-[12px] border border-[#d7d7d7] bg-white">
       <div className="flex items-center justify-between border-b border-neutral-200 bg-[#D1E2FD] px-4 py-3 text-sm font-medium text-neutral-800">
         <div className="flex items-center gap-2">
           <Image

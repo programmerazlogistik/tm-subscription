@@ -65,7 +65,7 @@ const PaketMenungguPembayaran = () => {
 
   return (
     <div
-      className="flex scroll-mt-24 flex-col overflow-hidden rounded-[12px] border border-neutral-200 bg-white shadow-sm"
+      className="flex scroll-mt-24 flex-col overflow-hidden rounded-[12px] border border-[#d7d7d7] bg-white"
       id="paket-menunggu-pembayaran"
     >
       <div className="flex items-center justify-between border-b border-neutral-200 bg-[#E6F0FF] px-4 py-3 text-sm font-medium text-neutral-800">
@@ -73,11 +73,25 @@ const PaketMenungguPembayaran = () => {
           <Wallet size={14} />
           <span>Paket Menunggu Pembayaran</span>
           <InfoTooltip>
-            Daftar paket yang telah anda pesan dan menunggu pembayaran.
+            Berikut adalah paket yang masih dalam status menunggu pembayaran,
+            silahkan lakukan pembayaran segera.
           </InfoTooltip>
         </div>
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            const isIframe = window.self !== window.top;
+            if (isIframe) {
+              window.parent.postMessage(
+                {
+                  type: "OPEN_PENDING_PAYMENT_MODAL",
+                  payload: allPendingPackages,
+                },
+                "*"
+              );
+            } else {
+              setIsModalOpen(true);
+            }
+          }}
           className="text-[12px] font-semibold text-blue-600 hover:text-blue-700 hover:underline"
         >
           Lihat Semua

@@ -1,21 +1,17 @@
 "use client";
 
-import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 
-import { ChevronDown, ChevronLeft } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
-import Button from "@/components/Button/Button";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/Collapsible/Collapsible";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import {
-  Slider,
-  // SliderContent, // Check export name
-} from "@/components/Slider/Slider";
+import { Slider } from "@/components/Slider/Slider";
 
 // Need to verify if it exports SliderContent or Content directly. It exports Slider.Content
 
@@ -109,6 +105,12 @@ const faqData = [
 ];
 
 const BuyPage = () => {
+  const router = useRouter();
+
+  const handleBuy = () => {
+    // Navigate to payment page. Ideally we'd pass plan details, but for now just navigation.
+    router.push("/subscription/payment");
+  };
   return (
     <div className="font-primary flex w-full flex-col bg-white p-8">
       <PageTitle withBack={true} href="/subscription">
@@ -129,7 +131,7 @@ const BuyPage = () => {
       {/* Pricing Section */}
       <div className="mx-auto mb-16 grid max-w-[807px] grid-cols-3 gap-6">
         {pricingData.map((plan, index) => (
-          <PricingCard key={index} {...plan} />
+          <PricingCard key={index} {...plan} onBuy={() => handleBuy(plan)} />
         ))}
       </div>
 

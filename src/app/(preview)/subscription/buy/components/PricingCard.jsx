@@ -1,5 +1,3 @@
-import { Award, Gift } from "lucide-react";
-
 import Button from "@/components/Button/Button";
 
 const PricingCard = ({
@@ -12,14 +10,20 @@ const PricingCard = ({
   subUser,
   masaAktif = "Masa Aktif 30 Hari",
   isRecommended = false,
-  isBestValue = false,
+  _isBestValue = false,
   onBuy,
 }) => {
   return (
     <div className="relative flex h-[336px] w-[253px] flex-col rounded-[20px] border border-neutral-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md">
       {isRecommended && (
         <div className="absolute right-4 top-4 flex items-center gap-1.5 rounded-lg bg-[#E1EBFD] px-3 py-1.5 text-xs font-semibold text-[#1B69F7]">
-          <Award className="h-4 w-4" />
+          <img
+            src="/svg/recommended.svg"
+            alt="Recommended"
+            width={12}
+            height={14}
+            className="h-4 w-4"
+          />
           <span>Direkomendasikan</span>
         </div>
       )}
@@ -56,8 +60,14 @@ const PricingCard = ({
             )}
           </div>
           {subUser && (
-            <div className="mt-1 flex items-center gap-2 text-xs font-semibold text-[#FFA700]">
-              <Gift className="h-3 w-3" />
+            <div className="mt-1 flex items-center gap-2 text-xs font-semibold text-[#FF7A00]">
+              <img
+                src="/svg/gift.svg"
+                alt="Gift"
+                width={12}
+                height={12}
+                className="h-3 w-3"
+              />
               <span>{subUser}</span>
             </div>
           )}
@@ -71,6 +81,7 @@ const PricingCard = ({
         <Button
           className="h-9 w-full rounded-full bg-[#1B69F7] text-sm font-semibold text-white hover:bg-blue-700"
           variant="muatparts-primary"
+          onClick={onBuy}
         >
           Beli muatkoin
         </Button>

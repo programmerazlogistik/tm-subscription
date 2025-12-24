@@ -9,6 +9,7 @@ import {
 
 import PaketMenungguPembayaran from "./components/PaketMenungguPembayaran";
 import PaketMuatkoinAktif from "./components/PaketMuatkoinAktif";
+import RiwayatPenggunaanMuatkoin from "./components/RiwayatPenggunaanMuatkoin";
 import SaldoMuatkoin from "./components/SaldoMuatkoin";
 
 const Page = () => {
@@ -19,7 +20,7 @@ const Page = () => {
       <div className="flex flex-col gap-6 rounded-xl bg-white p-6 drop-shadow-muat">
         <div className="flex gap-6">
           {/* Left Card: Saldo muatkoin */}
-          <SaldoMuatkoin />
+          <SaldoMuatkoin balance={80} maxBalance={125} isUnlimited={false} />
 
           {/* Right Card: Paket muatkoin Aktif */}
           <div className="flex-1">
@@ -50,16 +51,36 @@ const Page = () => {
             >
               Riwayat Pembelian
             </TabsTriggerWithSeparator>
+
+            <div className="relative ml-auto">
+              <select className="h-[36px] min-w-[150px] appearance-none rounded-md border border-neutral-400 bg-white pl-3 pr-8 text-sm font-semibold text-neutral-800 outline-none hover:bg-neutral-50 focus:border-blue-500">
+                <option>Semua Periode</option>
+                <option>7 Hari Terakhir</option>
+                <option>30 Hari Terakhir</option>
+              </select>
+              <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-neutral-600">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </div>
+            </div>
           </TabsList>
 
           <TabsContent
             value="usage"
-            className="flex h-[300px] items-center justify-center"
+            className="flex min-h-[300px] flex-col pt-6"
           >
-            <DataEmpty
-              title="Belum Ada Riwayat Penggunaan muatkoin"
-              titleClassname="text-sm font-semibold text-neutral-500 mt-4"
-            />
+            <RiwayatPenggunaanMuatkoin />
           </TabsContent>
 
           <TabsContent

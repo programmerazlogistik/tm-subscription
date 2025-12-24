@@ -4,7 +4,11 @@ import Link from "next/link";
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 
-const SaldoMuatkoin = () => {
+const SaldoMuatkoin = ({
+  balance = 0,
+  maxBalance = 0,
+  isUnlimited = false,
+}) => {
   return (
     <div className="relative h-[221px] w-[288px] overflow-hidden rounded-[12px] bg-[#E6F0FF] p-6">
       <div className="relative z-10 flex h-full flex-col justify-between">
@@ -23,9 +27,40 @@ const SaldoMuatkoin = () => {
           </InfoTooltip>
         </div>
 
-        <div className="mb-6 mt-8">
-          <span className="text-[32px] font-bold">0</span>
-          <span className="ml-2 text-lg font-bold">muatkoin</span>
+        <div className="">
+          {isUnlimited ? (
+            <div className="flex h-full flex-col">
+              <span className="text-[32px] font-bold leading-9 text-[#1B1B1B]">
+                Unlimited
+              </span>
+              <span className="text-xl font-semibold leading-9 text-[#1B1B1B]">
+                muatkoin
+              </span>
+            </div>
+          ) : maxBalance > 0 ? (
+            <div className="flex flex-col">
+              <div className="flex items-end gap-2">
+                <span className="text-[40px] font-bold leading-10 text-[#1B1B1B]">
+                  {balance}
+                </span>
+                <span className="mb-1 text-xl font-semibold text-[#1B1B1B]">
+                  muatkoin
+                </span>
+              </div>
+              <span className="text-sm font-medium text-[#868686]">
+                Dari {maxBalance} muatkoin
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-end gap-2">
+              <span className="text-[40px] font-bold leading-10 text-[#1B1B1B]">
+                {balance}
+              </span>
+              <span className="mb-1 text-xl font-semibold text-[#1B1B1B]">
+                muatkoin
+              </span>
+            </div>
+          )}
         </div>
 
         <Link href="/subscription/buy" className="w-full">

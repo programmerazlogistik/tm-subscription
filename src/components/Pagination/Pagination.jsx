@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 const buttonVariants = {
   muatparts: "bg-muat-parts-non-800 text-neutral-50",
   muatrans: "bg-muat-trans-primary-400 text-muat-trans-secondary-900",
+  blue: "bg-blue-600 text-white",
 };
 
 const Pagination = ({
@@ -21,6 +22,7 @@ const Pagination = ({
   className,
   paginationCounter,
   showPerPageLabel = "Tampilkan Jumlah Data",
+  showPrevNext = true,
 }) => {
   const perPageOptions = [10, 20, 40];
   const buttonClassname = buttonVariants[variants] || buttonVariants.muatrans;
@@ -110,21 +112,23 @@ const Pagination = ({
       className={cn("flex w-full items-center justify-between py-4", className)}
     >
       <div className="flex items-center gap-2">
-        <button
-          onClick={handlePrevPage}
-          disabled={currentPage === 1}
-          className={cn(
-            "rounded p-1",
-            currentPage === 1 || totalPages === 1
-              ? paginationCounter && totalPages > 1
-                ? "cursor-not-allowed text-neutral-400"
-                : "hidden cursor-not-allowed text-neutral-400"
-              : "text-neutral-700"
-          )}
-          aria-label={t("Pagination.previousPage", {}, "Previous page")}
-        >
-          <ChevronLeft size={20} />
-        </button>
+        {showPrevNext && (
+          <button
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
+            className={cn(
+              "rounded p-1",
+              currentPage === 1 || totalPages === 1
+                ? paginationCounter && totalPages > 1
+                  ? "cursor-not-allowed text-neutral-400"
+                  : "hidden cursor-not-allowed text-neutral-400"
+                : "text-neutral-700"
+            )}
+            aria-label={t("Pagination.previousPage", {}, "Previous page")}
+          >
+            <ChevronLeft size={20} />
+          </button>
+        )}
 
         <div className="flex items-center gap-2">
           {getPageNumbers().map((pageNumber, key) => (
@@ -154,20 +158,22 @@ const Pagination = ({
           ))}
         </div>
 
-        <button
-          onClick={handleNextPage}
-          disabled={currentPage === totalPages}
-          className={`rounded p-1 ${
-            currentPage === totalPages || totalPages === 1
-              ? paginationCounter && totalPages > 1
-                ? "cursor-not-allowed text-neutral-400"
-                : "hidden cursor-not-allowed text-neutral-400"
-              : "text-neutral-700"
-          }`}
-          aria-label={t("Pagination.nextPage", {}, "Next page")}
-        >
-          <ChevronRight size={20} />
-        </button>
+        {showPrevNext && (
+          <button
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages}
+            className={`rounded p-1 ${
+              currentPage === totalPages || totalPages === 1
+                ? paginationCounter && totalPages > 1
+                  ? "cursor-not-allowed text-neutral-400"
+                  : "hidden cursor-not-allowed text-neutral-400"
+                : "text-neutral-700"
+            }`}
+            aria-label={t("Pagination.nextPage", {}, "Next page")}
+          >
+            <ChevronRight size={20} />
+          </button>
+        )}
       </div>
 
       <div className="flex items-center gap-2">
