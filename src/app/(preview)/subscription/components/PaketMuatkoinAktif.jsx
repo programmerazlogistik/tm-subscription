@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useMemo } from "react";
 
 import { Calendar } from "lucide-react";
@@ -59,9 +60,12 @@ const PaketMuatkoinAktif = () => {
             Ini adalah paket aktif yang anda miliki dalam periode ini.
           </InfoTooltip>
         </div>
-        <button className="text-[12px] font-semibold text-blue-600 hover:text-blue-700 hover:underline">
+        <Link
+          href="/subscription/active"
+          className="text-[12px] font-semibold text-blue-600 hover:text-blue-700 hover:underline"
+        >
           Lihat Semua Transaksi
-        </button>
+        </Link>
       </div>
 
       <div className="relative mx-auto w-fit px-4 pb-6 pt-4">
