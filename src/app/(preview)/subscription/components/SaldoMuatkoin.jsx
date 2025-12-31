@@ -18,7 +18,7 @@ const SaldoMuatkoin = ({
     <div
       className={cn(
         "relative overflow-hidden rounded-[12px] bg-[#E6F0FF] p-6",
-        isRectangle && "h-[124px] w-[944px] rounded-md"
+        isRectangle && "h-[124px] w-[944px]"
       )}
     >
       <div
@@ -30,7 +30,7 @@ const SaldoMuatkoin = ({
         )}
       >
         {/* Left Side: Title + Balance */}
-        <div className="flex flex-col gap-2">
+        <div className={cn("flex flex-col", isRectangle ? "gap-2" : "gap-14")}>
           {/* Title */}
           <div className="flex items-center gap-2 text-sm font-medium text-neutral-800">
             <Image
