@@ -6,7 +6,7 @@ import Link from "next/link";
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 
-import { useGetBalance } from "@/hooks/use-get-balance";
+import { useGetBalance } from "@/hooks/Subscription/use-get-balance";
 
 import { cn } from "@/lib/utils";
 

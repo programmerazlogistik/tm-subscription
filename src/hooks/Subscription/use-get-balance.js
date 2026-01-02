@@ -2,7 +2,7 @@
 
 import { fetcherGeneral } from "@/lib/axios";
 
-import { useSWRHook } from "./use-swr";
+import { useSWRHook } from "../use-swr";
 
 const USE_MOCK = false;
 
