@@ -1,3 +1,8 @@
+"use client";
+
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import {
@@ -7,12 +12,25 @@ import {
   TabsTriggerWithSeparator,
 } from "@/components/Tabs/Tabs";
 
+import { useTokenActions } from "@/store/Auth/tokenStore";
+
 import PaketMenungguPembayaran from "./components/PaketMenungguPembayaran";
 import PaketMuatkoinAktif from "./components/PaketMuatkoinAktif";
 import RiwayatPenggunaanMuatkoin from "./components/RiwayatPenggunaanMuatkoin";
 import SaldoMuatkoin from "./components/SaldoMuatkoin";
 
 const Page = () => {
+  const searchParams = useSearchParams();
+  const { setToken } = useTokenActions();
+
+  // Save accessToken from query params on every load
+  useEffect(() => {
+    const accessToken = searchParams.get("accessToken");
+    if (accessToken) {
+      setToken({ accessToken, refreshToken: "" });
+    }
+  }, [searchParams, setToken]);
+
   return (
     <div className="font-primary flex w-full flex-col gap-6 p-8 text-neutral-900">
       <PageTitle withBack={false}>Subscription</PageTitle>
@@ -20,7 +38,7 @@ const Page = () => {
       <div className="flex flex-col gap-6 rounded-xl bg-white p-6 drop-shadow-muat">
         <div className="flex gap-6">
           {/* Left Card: Saldo muatkoin */}
-          <SaldoMuatkoin balance={80} maxBalance={125} isUnlimited={false} />
+          <SaldoMuatkoin />
 
           {/* Right Card: Paket muatkoin Aktif */}
           <div className="flex-1">

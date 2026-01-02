@@ -137,5 +137,8 @@ export const fetcherMuatparts = createAxios(
 export const fetcherMuatrans = createAxios(
   process.env.NEXT_PUBLIC_MUATRANS_API
 );
+
+export const fetcherGeneral = createAxios(process.env.NEXT_PUBLIC_GENERAL_API);
+
 export const fetcherPayment = createAxios(process.env.NEXT_PUBLIC_PAYMENT_API);
 export const fetcherMock = createAxios();

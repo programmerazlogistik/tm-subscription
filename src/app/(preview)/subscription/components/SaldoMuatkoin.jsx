@@ -1,18 +1,96 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 
+import { useGetBalance } from "@/hooks/use-get-balance";
+
 import { cn } from "@/lib/utils";
 
+const SaldoMuatkoinSkeleton = ({ isRectangle }) => {
+  return (
+    <div
+      className={cn(
+        "relative overflow-hidden rounded-[12px] bg-[#E6F0FF] p-6",
+        isRectangle && "h-[124px] w-[944px]"
+      )}
+    >
+      <div
+        className={cn(
+          "relative z-10 flex h-full",
+          isRectangle
+            ? "flex-row items-center justify-between"
+            : "w-[240px] flex-col justify-between"
+        )}
+      >
+        {/* Left Side: Title + Balance Skeleton */}
+        <div className={cn("flex flex-col", isRectangle ? "gap-2" : "gap-14")}>
+          {/* Title */}
+          <div className="flex items-center gap-2 text-sm font-medium text-neutral-800">
+            <Image
+              src="/svg/muatkoin/m.svg"
+              alt="Muatkoin"
+              width={16}
+              height={16}
+              className="h-4 w-4"
+            />
+            <span>Saldo muatkoin</span>
+            <InfoTooltip>
+              Ini adalah sisa saldo muatkoin anda yang dapat anda gunakan untuk
+              membuka semua fitur premium pada transport market
+            </InfoTooltip>
+          </div>
+
+          {/* Balance Skeleton */}
+          <div className="flex flex-col gap-2">
+            <div className="h-10 w-32 animate-pulse rounded-md bg-neutral-300" />
+            <div className="h-4 w-24 animate-pulse rounded-md bg-neutral-200" />
+          </div>
+        </div>
+
+        {/* Right Side: Button Skeleton */}
+        <div className={cn(isRectangle ? "shrink-0" : "w-full")}>
+          <div
+            className={cn(
+              "h-10 animate-pulse rounded-full bg-neutral-300",
+              isRectangle ? "w-32" : "w-full"
+            )}
+          />
+        </div>
+      </div>
+
+      {/* Background Decoration */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src={
+            isRectangle
+              ? "/svg/muatkoin/muatkoin-rectangle.svg"
+              : "/svg/muatkoin/muatkoin-square.svg"
+          }
+          alt="Background Decoration"
+          fill
+          className="object-cover"
+        />
+      </div>
+    </div>
+  );
+};
+
 const SaldoMuatkoin = ({
-  balance = 0,
-  maxBalance = 0,
   isUnlimited = false,
   variant = "square", // "square" | "rectangle"
 }) => {
+  const { data, isLoading } = useGetBalance();
+  const currentBalance = data?.Data?.currentBalance ?? 0;
+  const totalBalance = data?.Data?.totalBalance ?? 0;
   const isRectangle = variant === "rectangle";
+
+  if (isLoading) {
+    return <SaldoMuatkoinSkeleton isRectangle={isRectangle} />;
+  }
 
   return (
     <div
@@ -67,15 +145,15 @@ const SaldoMuatkoin = ({
               <div className="flex flex-col">
                 <div className="flex items-end gap-2">
                   <span className="text-[40px] font-bold leading-10 text-[#1B1B1B]">
-                    {balance}
+                    {currentBalance}
                   </span>
                   <span className="mb-1 text-xl font-semibold text-[#1B1B1B]">
                     muatkoin
                   </span>
                 </div>
-                {maxBalance > 0 && (
+                {totalBalance > 0 && (
                   <span className="text-sm font-medium text-[#868686]">
-                    Dari {maxBalance} muatkoin
+                    Dari {totalBalance} muatkoin
                   </span>
                 )}
               </div>
