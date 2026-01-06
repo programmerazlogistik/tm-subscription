@@ -1,11 +1,32 @@
+"use client";
+
 import { useState } from "react";
 
 import { ImageComponent } from "@muatmuat/ui/ImageComponent";
 
 import Button from "@/components/Button/Button";
 
-const CardPembayaranPaket = () => {
+const CardPembayaranPaket = ({ data }) => {
   const [openAccordion, setOpenAccordion] = useState(false);
+
+  // Helper for currency
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price || 0);
+  };
+
+  const {
+    expirationDate,
+    paymentMethodName,
+    paymentMethodIcon,
+    paymentChannel,
+    vaNumber,
+    totalPrice,
+  } = data || {};
 
   return (
     <div className="flex flex-col gap-6 rounded-xl bg-white p-6 shadow-muat">
@@ -14,7 +35,16 @@ const CardPembayaranPaket = () => {
         <div className="flex flex-col gap-2">
           <span className="font-bold text-[#FF7A00]">Bayar Sebelum</span>
           <span className="text-xs font-semibold text-neutral-900">
-            23 Okt 2024 08:12 WIB
+            {expirationDate
+              ? new Date(expirationDate).toLocaleString("id-ID", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  timeZoneName: "short",
+                })
+              : "-"}
           </span>
         </div>
         <div className="mb-auto flex items-center gap-2">
@@ -25,7 +55,8 @@ const CardPembayaranPaket = () => {
               width={16}
               height={16}
             />
-            01:28:20
+            {/* Timer logic could be added here later */}
+            --:--:--
           </div>
         </div>
       </div>
@@ -38,37 +69,41 @@ const CardPembayaranPaket = () => {
           </span>
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-neutral-900">
-              Bank BCA Virtual Account
+              {paymentMethodName}
             </span>
-            <ImageComponent
-              src="/svg/bca.svg"
-              alt="BCA"
-              width={32}
-              height={32}
-            />
+            {paymentMethodIcon && (
+              <ImageComponent
+                src={paymentMethodIcon}
+                alt={paymentMethodName || "payment"}
+                width={32}
+                height={32}
+              />
+            )}
           </div>
         </div>
 
-        {/* Nomor Virtual Account */}
-        <div className="flex flex-col gap-2">
-          <span className="text-xs font-medium text-neutral-600">
-            Nomor Virtual Account
-          </span>
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-neutral-900">
-              8072140885022
+        {/* Nomor Virtual Account - Only show for VA channel */}
+        {paymentChannel === "VA" && (
+          <div className="flex flex-col gap-2">
+            <span className="text-xs font-medium text-neutral-600">
+              Nomor Virtual Account
             </span>
-            <div className="flex cursor-pointer items-center gap-1 text-xs font-semibold text-[#176CF7]">
-              Salin
-              <ImageComponent
-                src="/svg/salin.svg"
-                alt="copy"
-                width={16}
-                height={16}
-              />
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-neutral-900">
+                {vaNumber}
+              </span>
+              <div className="flex cursor-pointer items-center gap-1 text-xs font-semibold text-[#176CF7]">
+                Salin
+                <ImageComponent
+                  src="/svg/salin.svg"
+                  alt="copy"
+                  width={16}
+                  height={16}
+                />
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Yang Harus Dibayarkan */}
         <div className="flex flex-col gap-2">
@@ -77,7 +112,7 @@ const CardPembayaranPaket = () => {
           </span>
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-neutral-900">
-              Rp250.000
+              {formatPrice(totalPrice)}
             </span>
             <div className="flex cursor-pointer items-center gap-1 text-sm font-semibold text-[#176CF7]">
               Salin

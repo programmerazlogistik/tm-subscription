@@ -13,104 +13,92 @@ import {
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { Slider } from "@/components/Slider/Slider";
 
-// Need to verify if it exports SliderContent or Content directly. It exports Slider.Content
+import { useGetAvailablePackages } from "@/hooks/Subscription/use-get-available-packages";
+import { useGetFaq } from "@/hooks/Subscription/use-get-faq";
+import { useGetTestimonials } from "@/hooks/Subscription/use-get-testimonials";
 
 import PricingCard from "./components/PricingCard";
 import TestimonialCard from "./components/TestimonialCard";
 
-const pricingData = [
-  {
-    title: "Starter",
-    description:
-      "Paket ideal untuk kebutuhan dasar dan mencoba semua fitur dengan kredit terbatas.",
-    muatkoinAmount: "30",
-    price: "Rp50.000",
-    discountPrice: null,
-    bonus: null,
-    subUser: null,
-    masaAktif: "Masa Aktif 30 Hari",
-    isRecommended: false,
-    isBestValue: false,
-  },
-  {
-    title: "Pro",
-    description:
-      "Paket hemat dengan bonus kredit dan akses ke semua fitur dengan kredit melimpah.",
-    muatkoinAmount: "350",
-    price: "Rp250.000",
-    discountPrice: "Rp300.000",
-    bonus: "+20 Free",
-    subUser: "Termasuk 1 Sub User",
-    masaAktif: "Masa Aktif 30 Hari",
-    isRecommended: true,
-    isBestValue: false, // Wait, Pro is recommended
-  },
-  {
-    title: "Premium",
-    description:
-      "Paket ideal untuk kebutuhan dasar dan mencoba semua fitur dengan kredit terbatas.",
-    muatkoinAmount: "Unlimited",
-    price: "Rp2.000.000",
-    discountPrice: null,
-    bonus: null,
-    subUser: "Termasuk 3 Sub User",
-    masaAktif: "Masa Aktif 30 Hari",
-    isRecommended: false,
-    isBestValue: false, // "Unlimited" usually is best value but visual says "Unlimited" big.
-  },
-];
+// Helper function to format price to IDR
+const formatPrice = (price) => {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(price);
+};
 
-const testimonialData = [
-  {
-    name: "Maulana Junior",
-    role: "Operational Manager",
-    company: "Transport Market",
-    date: "28 Sep 2024 13:30 WIB",
-    text: "Sejak memakai Transport Market, kami jauh lebih mudah mencari harga truk yang kompetitif tanpa harus telepon sana-sini. Data pricelist dan promo yang lengkap menghemat waktu tim operasional kami. Prosesnya lebih cepat, dan kami bisa langsung kontak transporter tanpa perantara.",
-    rating: 5,
-  },
-  {
-    name: "Maulana Junior",
-    role: "Operational Manager",
-    company: "Transport Market",
-    date: "28 Sep 2024 13:30 WIB",
-    text: "Sejak memakai Transport Market, kami jauh lebih mudah mencari harga truk yang kompetitif tanpa harus telepon sana-sini. Data pricelist dan promo yang lengkap menghemat waktu tim operasional kami. Prosesnya lebih cepat, dan kami bisa langsung kontak transporter tanpa perantara.",
-    rating: 5,
-  },
-];
-
-const faqData = [
-  {
-    question: "Apa itu Kredit di Transport Market?",
-    answer: "Jawaban untuk pertanyaan ini...",
-  },
-  {
-    question: "Untuk apa saja Kredit Transport Market dapat digunakan?",
-    answer: "Jawaban untuk pertanyaan ini...",
-  },
-  {
-    question: "Bagaimana cara membeli Kredit Transport Market?",
-    answer: "Jawaban untuk pertanyaan ini...",
-  },
-  {
-    question:
-      "Apakah Kredit Transport Market memiliki masa berlaku dan apakah sisa kredit bisa hangus?",
-    answer: "Jawaban untuk pertanyaan ini...",
-  },
-  {
-    question:
-      "Bagaimana cara mengecek sisa Kredit Transport Market yang saya miliki?",
-    answer: "Jawaban untuk pertanyaan ini...",
-  },
-];
+// Helper function to format testimonial date
+const formatTestimonialDate = (dateString) => {
+  if (!dateString) return "-";
+  return new Date(dateString).toLocaleString("id-ID", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZoneName: "short",
+  });
+};
 
 const BuyPage = () => {
   const router = useRouter();
+  const { data } = useGetAvailablePackages();
+  const { data: testimonialResponse } = useGetTestimonials();
+  const { data: faqResponse } = useGetFaq("57");
 
-  const handleBuy = () => {
-    // Navigate to payment page. Ideally we'd pass plan details, but for now just navigation.
-    router.push("/subscription/payment");
+  // Transform FAQ API data
+  const faqData = useMemo(() => {
+    const faqs = faqResponse?.Data ?? [];
+    return faqs.map((item) => ({
+      question: item.title,
+      answer: item.content,
+      link: item.link,
+      showMore: item.IsShowLihatSelengkapnya === 1,
+    }));
+  }, [faqResponse]);
+
+  // Transform testimonial API data
+  const testimonialData = useMemo(() => {
+    const testimonials = testimonialResponse?.Data?.testimonials ?? [];
+    return testimonials.map((item) => ({
+      id: item.id,
+      name: item.username,
+      text: item.testimonial,
+      date: formatTestimonialDate(item.createdAt),
+      rating: item.rating,
+    }));
+  }, [testimonialResponse]);
+
+  // Transform API data to PricingCard props
+  const pricingData = useMemo(() => {
+    const packages = data?.Data?.packages ?? [];
+    return packages.map((pkg) => ({
+      id: pkg.id,
+      title: pkg.name,
+      description: pkg.description,
+      muatkoinAmount: pkg.isUnlimited ? "Unlimited" : String(pkg.muatkoin),
+      price: formatPrice(pkg.price),
+      discountPrice: pkg.originalPrice ? formatPrice(pkg.originalPrice) : null,
+      bonus: pkg.bonusMuatkoin ? `+${pkg.bonusMuatkoin} Free` : null,
+      subUser:
+        pkg.subUsersIncluded > 0
+          ? `Termasuk ${pkg.subUsersIncluded} Sub User`
+          : null,
+      masaAktif: pkg.periodLabel,
+      isRecommended: pkg.isRecommended,
+      isBestValue: pkg.isPopular,
+      canPurchase: pkg.canPurchase,
+    }));
+  }, [data]);
+
+  const handleBuy = (plan) => {
+    // Navigate to payment page with plan id
+    router.push(`/subscription/payment?packageId=${plan.id}`);
   };
+
   return (
     <div className="font-primary flex w-full flex-col bg-white p-8">
       <PageTitle withBack={true} href="/subscription">
@@ -129,10 +117,40 @@ const BuyPage = () => {
       </div>
 
       {/* Pricing Section */}
-      <div className="mx-auto mb-16 grid max-w-[807px] grid-cols-3 gap-6">
-        {pricingData.map((plan, index) => (
-          <PricingCard key={index} {...plan} onBuy={() => handleBuy(plan)} />
-        ))}
+      <div className="mb-16 bg-white">
+        <div className="mx-auto max-w-6xl">
+          <Slider.Root
+            items={useMemo(() => {
+              const chunkSize = 3;
+              const chunks = [];
+              for (let i = 0; i < pricingData.length; i += chunkSize) {
+                chunks.push(pricingData.slice(i, i + chunkSize));
+              }
+              return chunks;
+            }, [pricingData])}
+            className="relative"
+          >
+            <div className="px-[68px]">
+              <Slider.Content effect="slide">
+                {(items) => (
+                  <div className="mx-auto grid max-w-[807px] grid-cols-3 gap-6">
+                    {items.map((plan) => (
+                      <div key={plan.id} className="flex justify-center">
+                        <PricingCard {...plan} onBuy={() => handleBuy(plan)} />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </Slider.Content>
+            </div>
+
+            <Slider.DesktopNavigation
+              className="-mt-3 !w-full !max-w-none !justify-between !px-0"
+              prevButtonClassName="bg-white rounded-full p-2 shadow-md h-12 w-12 flex items-center justify-center border border-neutral-100 hover:bg-neutral-50"
+              nextButtonClassName="bg-white rounded-full p-2 shadow-md h-12 w-12 flex items-center justify-center border border-neutral-100 hover:bg-neutral-50"
+            />
+          </Slider.Root>
+        </div>
       </div>
 
       {/* Testimonial Section */}
@@ -150,15 +168,15 @@ const BuyPage = () => {
                 chunks.push(testimonialData.slice(i, i + chunkSize));
               }
               return chunks;
-            }, [])}
+            }, [testimonialData])}
             className="relative"
           >
             <div className="px-[68px]">
-              <Slider.Content>
+              <Slider.Content effect="slide">
                 {(items) => (
                   <div className="mx-auto grid max-w-[808px] grid-cols-1 gap-6 md:grid-cols-2">
-                    {items.map((item, index) => (
-                      <div key={index} className="flex justify-center">
+                    {items.map((item) => (
+                      <div key={item.id} className="flex justify-center">
                         <TestimonialCard {...item} />
                       </div>
                     ))}
@@ -205,7 +223,7 @@ const BuyPage = () => {
                   />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="pb-4 pt-2 text-sm text-neutral-600">
-                  {item.answer}
+                  <div dangerouslySetInnerHTML={{ __html: item.answer }} />
                 </CollapsibleContent>
               </Collapsible>
             </div>

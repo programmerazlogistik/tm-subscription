@@ -1,7 +1,5 @@
+import { useTokenStore, useUserStore } from "@muatmuat/lib/auth-adapter";
 import xior from "xior";
-
-import { useTokenStore } from "@/store/AuthStore/tokenStore";
-import { useUserStore } from "@/store/AuthStore/userStore";
 
 const LIST_PUBLIC_ROUTES = [
   {
@@ -130,7 +128,6 @@ export const createAxios = (baseURL) => {
 // const axios = createAxios(process.env.NEXT_PUBLIC_INTERNAL_API);
 // export default axios;
 
-// API's with different target baseURL
 export const fetcherMuatparts = createAxios(
   process.env.NEXT_PUBLIC_INTERNAL_API
 );
@@ -140,5 +137,8 @@ export const fetcherMuatrans = createAxios(
 
 export const fetcherGeneral = createAxios(process.env.NEXT_PUBLIC_GENERAL_API);
 
+export const fetcherBaseURL = createAxios(process.env.NEXT_PUBLIC_BASE_URL_API);
+
 export const fetcherPayment = createAxios(process.env.NEXT_PUBLIC_PAYMENT_API);
-export const fetcherMock = createAxios();
+
+export const fetcherMock = createAxios("http://localhost:3000");

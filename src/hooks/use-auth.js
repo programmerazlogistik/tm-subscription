@@ -3,12 +3,15 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 
+import {
+  useTokenActions,
+  useTokenStore,
+  useUserActions,
+  useUserStore,
+} from "@muatmuat/lib/auth-adapter";
 import { useShallow } from "zustand/react/shallow";
 
 import { fetcherMuatparts } from "@/lib/axios";
-
-import { useTokenActions, useTokenStore } from "@/store/AuthStore/tokenStore";
-import { useUserActions, useUserStore } from "@/store/AuthStore/userStore";
 
 /* eslint-disable no-console */
 

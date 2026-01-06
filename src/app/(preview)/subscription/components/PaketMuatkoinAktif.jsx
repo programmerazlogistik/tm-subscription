@@ -10,31 +10,45 @@ import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import { Slider } from "@/components/Slider/Slider";
 
-const activePackages = [
-  {
-    id: 1,
-    name: "Business Pro (30 Hari)",
-    totalMuatkoin: "20",
-    isUnlimited: false,
-    expiry: "15 Okt 2020",
-  },
-  {
-    id: 2,
-    name: "Business Pro (30 Hari)",
-    totalMuatkoin: "Unlimited",
-    isUnlimited: true,
-    expiry: "15 Okt 2020",
-  },
-  {
-    id: 3,
-    name: "Business Pro (1 Tahun)",
-    totalMuatkoin: "100",
-    isUnlimited: false,
-    expiry: "15 Okt 2021",
-  },
-];
+import { useGetPurchaseHistory } from "@/hooks/Payment/use-get-purchase-history";
+
+// Helper function to format date
+const formatDate = (dateString) => {
+  if (!dateString) return "-";
+  return new Date(dateString).toLocaleDateString("id-ID", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
+
+// Transform API data to card format
+const transformPackageData = (pkg) => ({
+  id: pkg.id,
+  name: `${pkg.packageName} (${pkg.packageDetail?.period || 30} Hari)`,
+  totalMuatkoin: pkg.isUnlimited
+    ? "Unlimited"
+    : pkg.bonusMuatkoin > 0
+      ? `${pkg.baseMuatkoin} + ${pkg.bonusMuatkoin} Free`
+      : String(pkg.baseMuatkoin),
+  isUnlimited: pkg.isUnlimited,
+  expiry: formatDate(pkg.expiresAt),
+});
 
 const PaketMuatkoinAktif = () => {
+  // Fetch paid purchase history
+  const { data: apiResponse, isLoading } = useGetPurchaseHistory({
+    status: "paid",
+    page: 1,
+    limit: 100,
+  });
+
+  // Transform API data
+  const activePackages = useMemo(() => {
+    const packages = apiResponse?.Data?.purchaseHistory ?? [];
+    return packages.map(transformPackageData);
+  }, [apiResponse]);
+
   const hasPackages = activePackages.length > 0;
 
   const slides = useMemo(() => {
@@ -43,7 +57,31 @@ const PaketMuatkoinAktif = () => {
       chunks.push(activePackages.slice(i, i + 2));
     }
     return chunks;
-  }, []);
+  }, [activePackages]);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col overflow-hidden rounded-[12px] border border-[#d7d7d7] bg-white">
+        <div className="flex items-center justify-between border-b border-neutral-200 bg-[#D1E2FD] px-4 py-3 text-sm font-medium text-neutral-800">
+          <div className="flex items-center gap-2">
+            <Image
+              src="/svg/paket-aktif.svg"
+              alt="Paket Aktif"
+              width={14}
+              height={16}
+            />
+            <span>Paket muatkoin Aktif</span>
+            <InfoTooltip>
+              Ini adalah paket aktif yang anda miliki dalam periode ini.
+            </InfoTooltip>
+          </div>
+        </div>
+        <div className="flex min-h-[140px] items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-neutral-200 border-t-[#176CF7]" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col overflow-hidden rounded-[12px] border border-[#d7d7d7] bg-white">

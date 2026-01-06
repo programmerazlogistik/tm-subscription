@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
+import { useTokenStore } from "@muatmuat/lib/auth-adapter";
+
 import { mockGetAvailableVouchers } from "@/services/Shipper/voucher/mockVoucherService";
 import { muatTransGetAvailableVouchers } from "@/services/Shipper/voucher/muatTransVoucherService";
-
-import { useTokenStore } from "@/store/AuthStore/tokenStore";
 
 export const useVouchers = (token, useMockData = true, mockEmpty = false) => {
   const [vouchers, setVouchers] = useState([]);

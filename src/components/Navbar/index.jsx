@@ -4,15 +4,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { useTokenActions, useUserActions } from "@muatmuat/lib/auth-adapter";
+
 import IconComponent from "@/components/IconComponent/IconComponent";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/Popover/Popover";
-
-import { useTokenActions } from "@/store/AuthStore/tokenStore";
-import { useUserActions } from "@/store/AuthStore/userStore";
 
 const Navbar = ({ user = "John", toggleSidebar, sidebarOpen }) => {
   const router = useRouter();

@@ -1,9 +1,21 @@
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import Button from "@/components/Button/Button";
 
-const RingkasanPembayaran = ({ current }) => {
+import { useCreatePurchase } from "@/hooks/Payment/use-create-purchase";
+import { useGetPaymentMethods } from "@/hooks/Payment/use-get-payment-methods";
+
+import { ModalOpsiPembayaran } from "./ModalOpsiPembayaran";
+
+const RingkasanPembayaran = ({ current, packageId }) => {
   const router = useRouter();
+  const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState(null);
+
+  const { data: paymentMethodsData } = useGetPaymentMethods();
+  const paymentMethods = paymentMethodsData?.Data || [];
+
+  const { createPurchase, isLoading } = useCreatePurchase();
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("id-ID", {
@@ -14,6 +26,21 @@ const RingkasanPembayaran = ({ current }) => {
   };
 
   const finalPrice = current.rawPrice - (current.discount || 0);
+
+  const handleProceedPayment = async () => {
+    try {
+      const result = await createPurchase({
+        packageId,
+        paymentMethodId: selectedPaymentMethodId,
+      });
+
+      if (result?.id) {
+        router.push(`/subscription/payment/${result.id}/detail`);
+      }
+    } catch (error) {
+      console.error("Failed to create purchase:", error);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-4 rounded-xl px-5 py-6 shadow-muat">
@@ -33,7 +60,7 @@ const RingkasanPembayaran = ({ current }) => {
             </div>
           </div>
 
-          {current.discount && (
+          {current.discount > 0 && (
             <div className="flex items-start justify-between">
               <div className="max-w-[166px] text-xs font-medium text-neutral-600">
                 Potongan Harga
@@ -53,13 +80,24 @@ const RingkasanPembayaran = ({ current }) => {
             </span>
           </div>
 
-          <Button
-            variant="muatparts-primary"
-            className="mt-2 w-full rounded-3xl text-white"
-            onClick={() => router.push("/subscription/payment/123/detail")}
-          >
-            {finalPrice === 0 ? "Bayar" : "Pilih Opsi Pembayaran"}
-          </Button>
+          {finalPrice === 0 ? (
+            <Button
+              variant="muatparts-primary"
+              className="mt-2 w-full rounded-3xl text-white"
+              onClick={handleProceedPayment}
+            >
+              Bayar
+            </Button>
+          ) : (
+            <div className="mt-2">
+              <ModalOpsiPembayaran
+                paymentMethods={paymentMethods}
+                selectedPaymentMethodId={selectedPaymentMethodId}
+                onSelectedPaymentMethodId={setSelectedPaymentMethodId}
+                onProceedPayment={handleProceedPayment}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

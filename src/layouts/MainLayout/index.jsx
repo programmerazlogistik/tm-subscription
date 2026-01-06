@@ -3,6 +3,8 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 
+import { useTokenStore } from "@muatmuat/lib/auth-adapter";
+
 import LoadingStatic from "@/components/Loading/LoadingStatic";
 import Navbar from "@/components/Navbar";
 import NavigationWarningModal from "@/components/NavigationWarningModal";
@@ -15,7 +17,6 @@ import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { StackManagerInitializer } from "@/lib/stack-manager";
 
 import { NavigationGuardProvider } from "@/providers/NavigationGuardProvider";
-import { useTokenStore } from "@/store/AuthStore/tokenStore";
 import { useLoadingAction } from "@/store/Shared/loadingStore";
 
 const MainLayout = ({ children }) => {

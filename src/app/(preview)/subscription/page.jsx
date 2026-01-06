@@ -3,7 +3,8 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
-import DataEmpty from "@/components/DataEmpty/DataEmpty";
+import { useTokenActions } from "@muatmuat/lib/auth-adapter";
+
 import PageTitle from "@/components/PageTitle/PageTitle";
 import {
   Tabs,
@@ -12,10 +13,9 @@ import {
   TabsTriggerWithSeparator,
 } from "@/components/Tabs/Tabs";
 
-import { useTokenActions } from "@/store/Auth/tokenStore";
-
 import PaketMenungguPembayaran from "./components/PaketMenungguPembayaran";
 import PaketMuatkoinAktif from "./components/PaketMuatkoinAktif";
+import RiwayatPembelianMuatkoin from "./components/RiwayatPembelianMuatkoin";
 import RiwayatPenggunaanMuatkoin from "./components/RiwayatPenggunaanMuatkoin";
 import SaldoMuatkoin from "./components/SaldoMuatkoin";
 
@@ -103,12 +103,9 @@ const Page = () => {
 
           <TabsContent
             value="purchase"
-            className="flex h-[300px] items-center justify-center"
+            className="flex min-h-[300px] flex-col pt-6"
           >
-            <DataEmpty
-              title="Belum Ada Riwayat Pembelian muatkoin"
-              titleClassname="text-sm font-semibold text-neutral-500 mt-4"
-            />
+            <RiwayatPembelianMuatkoin />
           </TabsContent>
         </Tabs>
       </div>

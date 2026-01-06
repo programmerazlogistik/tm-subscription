@@ -1,4 +1,5 @@
-import { useTokenStore } from "@/store/AuthStore/tokenStore";
+import { useTokenStore } from "@muatmuat/lib/auth-adapter";
+
 import { useFirstTimerModalStore } from "@/store/Shipper/first-timer/firstTimerModalStore";
 import { useWaitingSettlementModalStore } from "@/store/Shipper/forms/waitingSettlementModalStore";
 
