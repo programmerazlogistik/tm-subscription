@@ -1,15 +1,24 @@
 ```bash
-curl --location --request POST 'https://general-az.assetlogistik.com/api/get_faq_mp_top' \
---header 'user-agent: Dart/3.8 (dart:io)' \
---header 'languageid: c5326209-8336-40f3-bf0f-b7ec8f44bab2' \
---header 'accept-encoding: gzip' \
---header 'content-length: 228' \
---header 'host: general-az.assetlogistik.com' \
---header 'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Implbmdsb3RAeW9wbWFpbC5jb20iLCJyb2xlIjoic2VsbGVyIiwiaWQiOiIzMzk5Iiwic2VsbGVyaWQiOiI1Y2JjYWRlMy04ZWJiLTRjYjEtYjY1Yy02YWE3NDk4MDY4ZTMiLCJpYXQiOjE3Njc2ODgyNzQsImV4cCI6MTc2Nzc3NDY3NH0.kHPfiAoGjLCJ8eJ1SQTqTb1kqxF1536qy_kPJIBsVNw' \
---header 'content-type: application/json' \
---header 'loginas: buyer' \
---header 'platform: mobile' \
---data-raw '{"category_menu_muat_id":57,"base_data":"{\"App\":\"1\",\"Locale\":\"en-US\",\"Email\":\"jenglot@yopmail.com\",\"Token\":\"ZjJjMWExZWRmZjRlMjBjYzU0N2JiMTRkZGNiYTVlZGU1YTM0NjBmNQ--\",\"Key\":\"AZthebestsystem\",\"ID\":\"3399\"}"}'
+curl --location --request POST "https://api-az.assetlogistik.com/v1/tm/faq/mp-top" \
+--header "Accept: /" \
+--header "Accept-Language: en-US,en;q=0.8" \
+--header "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFzZEB5b3BtYWlsLmNvbSIsInJvbGUiOiJidXllciIsImlkIjoiNDgwMyIsInNlbGxlcmlkIjpudWxsLCJpYXQiOjE3Njc2Njk1NzQsImV4cCI6MTc2Nzc1NTk3NH0.x2qzm5HDZH9qnhhv6WLZ-DS80otoLksWcdBf_JD5qbQ" \
+--header "Connection: keep-alive" \
+--header "Content-Type: application/json" \
+--header "Cookie: FluentLocale=id_ID; U_J=9Jq7Iw2WKOO0E9TL79k0aXJybK8neaXSrQnDfVYg6cZfHoEDT8GliY5sLIir7m71jmjNVyM6ttLZW3UOe86IAaDEbvEFj4O7Uemn; G_ENABLED_IDPS=google; FluentLocale_CMS=id_ID; CookiesToken=OerZiavCNYG01Zs7LVNcGJk9NIv8iSktfiqlaFOqAtzD1qxK5F7BfGfLoYk2Qzl0MNPpZ24fWxExCZQj3l70SU0yxAodGxi6ceDs; PHPSESSID=il4kq07itu4i28gjmu5m0ul5io; U_J=EOsXONbRkRU9X33FUIvaJk0QKFBPAyxn5njvNaMjsQlxeNG3oJFZ9bZGoS3k6lQ2sipLUzPspyNFhd63dNO14fYxFfHgYy4WOZW7" \
+--header "Origin: https://general-az.assetlogistik.com" \
+--header "Referer: https://general-az.assetlogistik.com/muatpartsplus/subscription" \
+--header "Sec-Fetch-Dest: empty" \
+--header "Sec-Fetch-Mode: cors" \
+--header "Sec-Fetch-Site: same-origin" \
+--header "Sec-GPC: 1" \
+--header "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36" \
+--header "sec-ch-ua: \"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"" \
+--header "sec-ch-ua-mobile: ?0" \
+--header "sec-ch-ua-platform: \"Windows\"" \
+--data "{
+    \"category_menu_muat_id\": 57
+}"
 ```
 
 ```json

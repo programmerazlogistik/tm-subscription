@@ -3,10 +3,10 @@
 import { useTokenStore } from "@muatmuat/lib/auth-adapter";
 import useSWR from "swr";
 
-import { fetcherGeneral } from "@/lib/axios";
+import { fetcherBaseURL } from "@/lib/axios";
 
 // Use mock data for development
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 // Mock API result
 export const MOCK_DATA = {
@@ -55,19 +55,9 @@ export const getFaq = async (categoryMenuMuatId = 57) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     result = { data: MOCK_DATA };
   } else {
-    result = await fetcherGeneral.post(
-      `/api/get_faq_mp_top`,
-      {
-        category_menu_muat_id: categoryMenuMuatId,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          loginas: "buyer",
-          platform: "mobile",
-        },
-      }
-    );
+    result = await fetcherBaseURL.post(`/v1/tm/faq/mp-top`, {
+      category_menu_muat_id: categoryMenuMuatId,
+    });
   }
   return result.data;
 };
