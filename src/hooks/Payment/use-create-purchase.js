@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { fetcherBaseURL } from "@/lib/axios";
+import { fetcherTM } from "@/lib/axios";
 
 // Use mock data for development
 const USE_MOCK = false;
@@ -47,7 +47,7 @@ export const useCreatePurchase = () => {
         await new Promise((resolve) => setTimeout(resolve, 1000));
         data = MOCK_DATA.Data;
       } else {
-        const response = await fetcherBaseURL.post(
+        const response = await fetcherTM.post(
           "/v1/tm/buyer_subscription/purchase",
           {
             packageId,

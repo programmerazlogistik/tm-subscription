@@ -141,4 +141,6 @@ export const fetcherBaseURL = createAxios(process.env.NEXT_PUBLIC_BASE_URL_API);
 
 export const fetcherPayment = createAxios(process.env.NEXT_PUBLIC_PAYMENT_API);
 
+export const fetcherTM = createAxios(process.env.NEXT_PUBLIC_TM_API);
+
 export const fetcherMock = createAxios("http://localhost:3000");

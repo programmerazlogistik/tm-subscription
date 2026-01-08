@@ -3,7 +3,7 @@
 import { useTokenStore } from "@muatmuat/lib/auth-adapter";
 import useSWR from "swr";
 
-import { fetcherBaseURL } from "@/lib/axios";
+import { fetcherTM } from "@/lib/axios";
 
 // Use mock data for development since server data is not available yet
 const USE_MOCK = false;
@@ -40,7 +40,7 @@ export const getPackageDetail = async (packageId) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     result = { data: MOCK_DATA };
   } else {
-    result = await fetcherBaseURL.get(
+    result = await fetcherTM.get(
       `/v1/tm/buyer_subscription/purchase/packages/${packageId}`
     );
   }
