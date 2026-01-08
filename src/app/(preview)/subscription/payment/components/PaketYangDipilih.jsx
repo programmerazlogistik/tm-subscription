@@ -1,4 +1,4 @@
-import { ImageComponent } from "@muatmuat/ui/ImageComponent";
+import Image from "next/image";
 
 const PaketYangDipilih = ({ current }) => {
   return (
@@ -9,7 +9,7 @@ const PaketYangDipilih = ({ current }) => {
           <h2 className="text-lg font-bold text-black">{current.title}</h2>
           {current.recommended && (
             <div className="flex h-6 items-center gap-1.5 rounded-md bg-[#E5F0FF] px-2 text-xs font-semibold text-[#176CF7]">
-              <ImageComponent
+              <Image
                 src="/svg/recommended.svg"
                 alt="Recommended"
                 width={12}
@@ -53,7 +53,7 @@ const PaketYangDipilih = ({ current }) => {
 
         {current.gift && (
           <div className="mt-2 flex items-center gap-2">
-            <ImageComponent
+            <Image
               src="/svg/gift.svg"
               alt="Gift"
               width={18}

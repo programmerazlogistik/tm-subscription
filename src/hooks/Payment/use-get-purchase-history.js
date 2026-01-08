@@ -81,14 +81,18 @@ export const getPurchaseHistory = async ({
   status = "pending",
   page = 1,
   limit = 10,
+  search = "",
+  sort = "DESC",
 } = {}) => {
   let result;
   if (USE_MOCK) {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     result = { data: MOCK_DATA };
   } else {
+    const searchParam = search ? `&search=${encodeURIComponent(search)}` : "";
+    const sortParam = sort ? `&sort=${sort}` : "";
     result = await fetcherTM.get(
-      `/v1/tm/buyer_subscription/purchase-history?status=${status}&page=${page}&limit=${limit}`
+      `/v1/tm/buyer_subscription/purchase-history?status=${status}&page=${page}&limit=${limit}${searchParam}${sortParam}`
     );
   }
   return result.data;
@@ -98,14 +102,16 @@ export const useGetPurchaseHistory = ({
   status = "pending",
   page = 1,
   limit = 10,
+  search = "",
+  sort = "DESC",
 } = {}) => {
   const accessToken = useTokenStore((state) => state.accessToken);
 
   return useSWR(
     accessToken
-      ? `get-purchase-history?status=${status}&page=${page}&limit=${limit}`
+      ? `get-purchase-history?status=${status}&page=${page}&limit=${limit}&search=${search}&sort=${sort}`
       : null,
-    () => getPurchaseHistory({ status, page, limit }),
+    () => getPurchaseHistory({ status, page, limit, search, sort }),
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,

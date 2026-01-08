@@ -1,4 +1,4 @@
-import { ImageComponent } from "@muatmuat/ui/ImageComponent";
+import Image from "next/image";
 
 const CardStatusPaket = ({ status = "active" }) => {
   const statusConfig = {
@@ -33,7 +33,7 @@ const CardStatusPaket = ({ status = "active" }) => {
   return (
     <div className="flex items-center gap-4 rounded-xl bg-white p-6 shadow-muat">
       <div className="flex-shrink-0">
-        <ImageComponent
+        <Image
           src={config.icon}
           alt={config.title}
           width={48}

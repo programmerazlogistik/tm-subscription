@@ -202,20 +202,7 @@ const PaketMenungguPembayaran = () => {
         </div>
         {hasPackages && (
           <button
-            onClick={() => {
-              const isIframe = window.self !== window.top;
-              if (isIframe) {
-                window.parent.postMessage(
-                  {
-                    type: "OPEN_PENDING_PAYMENT_MODAL",
-                    payload: pendingPackages,
-                  },
-                  "*"
-                );
-              } else {
-                setIsModalOpen(true);
-              }
-            }}
+            onClick={() => router.push("/subscription/pending")}
             className="text-[12px] font-semibold text-blue-600 hover:text-blue-700 hover:underline"
           >
             Lihat Semua

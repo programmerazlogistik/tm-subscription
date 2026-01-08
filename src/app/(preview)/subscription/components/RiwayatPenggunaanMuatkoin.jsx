@@ -7,63 +7,62 @@ import { Filter } from "lucide-react";
 import { InputSearch } from "@/components/InputSearch/InputSearch";
 import Pagination from "@/components/Pagination/Pagination";
 
+import { useGetAllTransactions } from "@/hooks/Subscription/use-get-all-transactions";
+import { useDebounce } from "@/hooks/use-debounce";
+
 import { cn } from "@/lib/utils";
 
-// Mock Data
-const mockData = Array.from({ length: 25 }, (_, i) => {
-  const type = i === 0 ? "topup" : i === 4 ? "expired" : "usage";
-  return {
-    id: i + 1,
-    date: "27 Mar 2021 17:43 WIB",
-    userModul:
-      type === "topup"
-        ? "Top Up muatkoin"
-        : type === "expired"
-          ? "muatkoin Kedaluwarsa"
-          : "Shipper",
-    userModulType: type, // topup, usage, expired
-    reference: i === 0 ? "INV/9090/SMP/00932933" : "-",
-    description:
-      type === "topup"
-        ? "Top Up muatkoin"
-        : type === "expired"
-          ? "muatkoin Kedaluwarsa"
-          : i % 2 === 0
-            ? "Melihat No. Telp Transporter"
-            : "Melihat Profil Transporter",
-    subDescription:
-      type === "topup"
-        ? "Paket Business Pro (7 Hari)"
-        : type === "expired"
-          ? "Paket Business Pro (7 Hari)"
-          : i % 2 === 0
-            ? "PT Transport Recal Recal in Base"
-            : "PT Transnusa Minshitar",
-    amount:
-      type === "topup"
-        ? "+Unlimited muatkoin"
-        : type === "expired"
-          ? "-200 muatkoin"
-          : "-20 muatkoin",
-    isPositive: type === "topup",
-  };
-});
+// Helper function to format date
+const formatDate = (dateString) => {
+  if (!dateString) return "-";
+  return new Date(dateString).toLocaleString("id-ID", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZoneName: "short",
+  });
+};
+
+// Helper function to get user module type based on muatkoinChange
+const getUserModulType = (muatkoinChange) => {
+  if (muatkoinChange > 0) return "topup";
+  if (muatkoinChange < 0) return "usage";
+  return "usage";
+};
+
+// Helper function to get user module label based on description
+const getUserModulLabel = (description, muatkoinChange) => {
+  if (muatkoinChange > 0) return "Top Up muatkoin";
+  if (description?.toLowerCase().includes("expired"))
+    return "muatkoin Kedaluwarsa";
+  return "Penggunaan";
+};
 
 const RiwayatPenggunaanMuatkoin = () => {
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
 
-  // Filter Logic (Simple client-side)
-  const filteredData = mockData.filter((item) =>
-    item.description.toLowerCase().includes(searchValue.toLowerCase())
-  );
+  // Debounce search value
+  const debouncedSearch = useDebounce(searchValue, 500);
 
-  const totalPages = Math.ceil(filteredData.length / perPage);
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * perPage,
-    currentPage * perPage
-  );
+  // Fetch transactions with type="usage"
+  const { data: apiResponse, isLoading } = useGetAllTransactions({
+    type: "usage",
+    page: currentPage,
+    limit: perPage,
+    search: debouncedSearch,
+  });
+
+  const transactions = apiResponse?.Data?.transactions ?? [];
+  const pagination = apiResponse?.Data?.pagination ?? {
+    currentPage: 1,
+    totalPages: 1,
+    totalData: 0,
+    limit: 10,
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -73,7 +72,10 @@ const RiwayatPenggunaanMuatkoin = () => {
           <InputSearch
             placeholder="Cari Riwayat Penggunaan muatkoin"
             searchValue={searchValue}
-            setSearchValue={setSearchValue}
+            setSearchValue={(val) => {
+              setSearchValue(val);
+              setCurrentPage(1);
+            }}
           />
         </div>
         <button className="flex h-[32px] items-center gap-2 rounded-md border border-neutral-400 px-3 py-1.5 text-sm font-semibold text-neutral-800 hover:bg-neutral-50">
@@ -99,54 +101,71 @@ const RiwayatPenggunaanMuatkoin = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-neutral-200">
-            {paginatedData.map((item) => (
-              <tr key={item.id} className="hover:bg-neutral-50">
-                <td className="w-[136px] whitespace-nowrap px-4 py-4 text-xs font-semibold text-[#1B1B1B]">
-                  {item.date}
-                </td>
-                <td className="px-4 py-4">
-                  <span
-                    className={cn(
-                      "inline-flex h-[24px] w-[144px] items-center justify-center rounded-[6px] px-[8px] pb-[4px] pt-[6px] text-xs font-semibold",
-                      item.userModulType === "topup" &&
-                        "bg-[#D5FFC3] text-[#3ECD00]", // Green Corrected
-                      item.userModulType === "usage" &&
-                        "bg-[#E6F0FF] text-[#176CF7]", // Blue
-                      item.userModulType === "expired" &&
-                        "bg-[#FFD7D7] text-[#E93B3B]" // Red
-                    )}
-                  >
-                    {item.userModul}
-                  </span>
-                </td>
-                <td className="w-[155px] px-4 py-4 text-xs font-semibold text-[#1B1B1B]">
-                  {item.reference}
-                </td>
-                <td className="px-4 py-4">
-                  <div className="flex flex-col gap-1">
-                    <span className="text-xs font-semibold text-[#1B1B1B]">
-                      {item.description}
-                    </span>
-                    <span className="text-[10px] font-semibold text-[#676767]">
-                      {item.subDescription}
-                    </span>
+            {isLoading ? (
+              <tr>
+                <td colSpan={5} className="p-8 text-center">
+                  <div className="flex items-center justify-center">
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-neutral-200 border-t-[#176CF7]" />
                   </div>
                 </td>
-                <td className="px-4 py-4 text-right">
-                  <span
-                    className={cn(
-                      "inline-flex h-[24px] w-[136px] items-center justify-center rounded-[6px] px-[8px] pb-[4px] pt-[6px] text-xs font-semibold",
-                      item.isPositive
-                        ? "bg-[#D5FFC3] text-[#3ECD00]" // Green Corrected
-                        : "bg-[#FFD7D7] text-[#E93B3B]"
-                    )}
-                  >
-                    {item.amount}
-                  </span>
-                </td>
               </tr>
-            ))}
-            {paginatedData.length === 0 && (
+            ) : transactions.length > 0 ? (
+              transactions.map((item) => {
+                const userModulType = getUserModulType(item.muatkoinChange);
+                const userModulLabel = getUserModulLabel(
+                  item.description,
+                  item.muatkoinChange
+                );
+                const isPositive = item.muatkoinChange > 0;
+
+                return (
+                  <tr key={item.id} className="hover:bg-neutral-50">
+                    <td className="w-[136px] whitespace-nowrap px-4 py-4 text-xs font-semibold text-[#1B1B1B]">
+                      {formatDate(item.date)}
+                    </td>
+                    <td className="px-4 py-4">
+                      <span
+                        className={cn(
+                          "inline-flex h-[24px] w-[144px] items-center justify-center rounded-[6px] px-[8px] pb-[4px] pt-[6px] text-xs font-semibold",
+                          userModulType === "topup" &&
+                            "bg-[#D5FFC3] text-[#3ECD00]", // Green
+                          userModulType === "usage" &&
+                            "bg-[#E6F0FF] text-[#176CF7]", // Blue
+                          userModulType === "expired" &&
+                            "bg-[#FFD7D7] text-[#E93B3B]" // Red
+                        )}
+                      >
+                        {userModulLabel}
+                      </span>
+                    </td>
+                    <td className="w-[155px] px-4 py-4 text-xs font-semibold text-[#1B1B1B]">
+                      {item.transactionId || "-"}
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-xs font-semibold text-[#1B1B1B]">
+                          {item.description}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 text-right">
+                      <span
+                        className={cn(
+                          "inline-flex h-[24px] w-[136px] items-center justify-center rounded-[6px] px-[8px] pb-[4px] pt-[6px] text-xs font-semibold",
+                          isPositive
+                            ? "bg-[#D5FFC3] text-[#3ECD00]" // Green
+                            : "bg-[#FFD7D7] text-[#E93B3B]" // Red
+                        )}
+                      >
+                        {isPositive
+                          ? `+${item.muatkoinChange} muatkoin`
+                          : `${item.muatkoinChange} muatkoin`}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
               <tr>
                 <td colSpan={5} className="p-8 text-center text-neutral-500">
                   Tidak ada data ditemukan
@@ -158,19 +177,21 @@ const RiwayatPenggunaanMuatkoin = () => {
       </div>
 
       {/* Pagination */}
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-        onPerPageChange={(val) => {
-          setPerPage(val);
-          setCurrentPage(1);
-        }}
-        perPage={perPage}
-        variants="blue"
-        showPerPageLabel="Tampilkan Jumlah Detail"
-        showPrevNext={false}
-      />
+      {!isLoading && transactions.length > 0 && (
+        <Pagination
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+          onPageChange={setCurrentPage}
+          onPerPageChange={(val) => {
+            setPerPage(val);
+            setCurrentPage(1);
+          }}
+          perPage={perPage}
+          variants="blue"
+          showPerPageLabel="Tampilkan Jumlah Detail"
+          showPrevNext={false}
+        />
+      )}
     </div>
   );
 };

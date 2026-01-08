@@ -1,14 +1,12 @@
 "use client";
 
-import { useState } from "react";
-
-import { ImageComponent } from "@muatmuat/ui/ImageComponent";
+import Image from "next/image";
 
 import Button from "@/components/Button/Button";
 
-const CardPembayaranPaket = ({ data }) => {
-  const [openAccordion, setOpenAccordion] = useState(false);
+import { toast } from "@/lib/toast";
 
+const CardPembayaranPaket = ({ data }) => {
   // Helper for currency
   const formatPrice = (price) => {
     return new Intl.NumberFormat("id-ID", {
@@ -17,6 +15,17 @@ const CardPembayaranPaket = ({ data }) => {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(price || 0);
+  };
+
+  // Copy to clipboard function
+  const handleCopy = async (text, message) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success(message);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+      toast.error("Gagal menyalin");
+    }
   };
 
   const {
@@ -49,7 +58,7 @@ const CardPembayaranPaket = ({ data }) => {
         </div>
         <div className="mb-auto flex items-center gap-2">
           <div className="flex items-center gap-1 rounded bg-[#FFEFE2] px-2 py-1 text-sm font-medium text-[#DE2D39]">
-            <ImageComponent
+            <Image
               src="/svg/timer-red.svg"
               alt="timer"
               width={16}
@@ -72,7 +81,7 @@ const CardPembayaranPaket = ({ data }) => {
               {paymentMethodName}
             </span>
             {paymentMethodIcon && (
-              <ImageComponent
+              <img
                 src={paymentMethodIcon}
                 alt={paymentMethodName || "payment"}
                 width={32}
@@ -92,15 +101,15 @@ const CardPembayaranPaket = ({ data }) => {
               <span className="text-xs font-bold text-neutral-900">
                 {vaNumber}
               </span>
-              <div className="flex cursor-pointer items-center gap-1 text-xs font-semibold text-[#176CF7]">
+              <button
+                onClick={() =>
+                  handleCopy(vaNumber, "Nomor Virtual Account berhasil disalin")
+                }
+                className="flex cursor-pointer items-center gap-1 text-xs font-semibold text-[#176CF7] hover:text-[#1259CC]"
+              >
                 Salin
-                <ImageComponent
-                  src="/svg/salin.svg"
-                  alt="copy"
-                  width={16}
-                  height={16}
-                />
-              </div>
+                <Image src="/svg/salin.svg" alt="copy" width={16} height={16} />
+              </button>
             </div>
           </div>
         )}
@@ -114,15 +123,15 @@ const CardPembayaranPaket = ({ data }) => {
             <span className="text-xs font-bold text-neutral-900">
               {formatPrice(totalPrice)}
             </span>
-            <div className="flex cursor-pointer items-center gap-1 text-sm font-semibold text-[#176CF7]">
+            <button
+              onClick={() =>
+                handleCopy(String(totalPrice), "Total Tagihan berhasil disalin")
+              }
+              className="flex cursor-pointer items-center gap-1 text-sm font-semibold text-[#176CF7] hover:text-[#1259CC]"
+            >
               Salin
-              <ImageComponent
-                src="/svg/salin.svg"
-                alt="copy"
-                width={16}
-                height={16}
-              />
-            </div>
+              <Image src="/svg/salin.svg" alt="copy" width={16} height={16} />
+            </button>
           </div>
         </div>
       </div>

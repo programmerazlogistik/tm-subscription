@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 import Button from "@/components/Button/Button";
 import PageTitle from "@/components/PageTitle/PageTitle";
@@ -14,6 +14,7 @@ import CardStatusPaket from "./components/CardStatusPaket";
 
 const DetailPembayaranPage = () => {
   const params = useParams();
+  const router = useRouter();
   const id = params?.id;
 
   const { data: apiResponse, isLoading } = useGetPurchaseDetail(id);
@@ -171,7 +172,11 @@ const DetailPembayaranPage = () => {
 
         {uiStatus !== "waiting" && (
           <div className="mt-8 flex justify-center gap-4">
-            <Button variant="muatparts-primary" className="w-[136px]">
+            <Button
+              variant="muatparts-primary"
+              className="w-[136px]"
+              onClick={() => router.back()}
+            >
               Kembali
             </Button>
             <Button

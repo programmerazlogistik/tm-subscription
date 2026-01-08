@@ -1,8 +1,7 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
-
-import { ImageComponent } from "@muatmuat/ui/ImageComponent";
 
 import { cn } from "@/lib/utils";
 
@@ -36,7 +35,7 @@ const CaraPembayaran = () => {
               <span className="text-sm font-medium text-neutral-900">
                 {item}
               </span>
-              <ImageComponent
+              <Image
                 src="/svg/chevron-down.svg"
                 alt="arrow"
                 width={24}

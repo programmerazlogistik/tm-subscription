@@ -6,13 +6,13 @@ import { useState } from "react";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import Pagination from "@/components/Pagination/Pagination";
 
-import { useGetActivePackages } from "@/hooks/Subscription/use-get-active-packages";
+import { useGetPurchaseHistory } from "@/hooks/Payment/use-get-purchase-history";
 import { useDebounce } from "@/hooks/use-debounce";
 
 import SaldoMuatkoin from "../components/SaldoMuatkoin";
-import CardPaketAktif from "./components/CardPaketAktif";
+import CardPaketPending from "./components/CardPaketPending";
 
-const ActiveSubscriptionPage = () => {
+const PendingSubscriptionPage = () => {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -21,15 +21,16 @@ const ActiveSubscriptionPage = () => {
   // Debounce search value
   const debouncedSearch = useDebounce(search, 500);
 
-  // Fetch active packages from API
-  const { data: apiResponse, isLoading } = useGetActivePackages({
+  // Fetch pending packages from API
+  const { data: apiResponse, isLoading } = useGetPurchaseHistory({
+    status: "pending",
     page: currentPage,
     limit: perPage,
     search: debouncedSearch,
     sort: sort,
   });
 
-  const packages = apiResponse?.Data?.packages ?? [];
+  const packages = apiResponse?.Data?.purchaseHistory ?? [];
   const pagination = apiResponse?.Data?.pagination ?? {
     currentPage: 1,
     totalPages: 1,
@@ -50,7 +51,7 @@ const ActiveSubscriptionPage = () => {
 
         {/* Header with Back Button */}
         <PageTitle withBack={true} backUrl="/subscription">
-          Paket muatkoin Aktif
+          Paket Menunggu Pembayaran
         </PageTitle>
 
         {/* Search & Sort */}
@@ -111,10 +112,12 @@ const ActiveSubscriptionPage = () => {
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-neutral-200 border-t-[#176CF7]" />
             </div>
           ) : packages.length > 0 ? (
-            packages.map((item) => <CardPaketAktif key={item.id} data={item} />)
+            packages.map((item) => (
+              <CardPaketPending key={item.id} data={item} />
+            ))
           ) : (
             <div className="flex items-center justify-center py-12 text-neutral-500">
-              Tidak ada paket aktif ditemukan
+              Tidak ada paket menunggu pembayaran
             </div>
           )}
         </div>
@@ -140,4 +143,4 @@ const ActiveSubscriptionPage = () => {
   );
 };
 
-export default ActiveSubscriptionPage;
+export default PendingSubscriptionPage;
