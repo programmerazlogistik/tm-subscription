@@ -1,7 +1,7 @@
 import MainLayout from "@/layouts/MainLayout";
 
 export default function Home() {
-  console.log("FE Version: 1.0.2");
+  console.log("FE Version: 1.0.3");
   return (
     <MainLayout>
       <div className="flex min-h-full items-center justify-center">
