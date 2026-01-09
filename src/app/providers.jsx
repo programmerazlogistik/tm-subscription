@@ -1,15 +1,17 @@
 "use client";
 
 import { Suspense } from "react";
-import { TranslationProvider } from "@/hooks/use-translation";
+
 import LoadingStatic from "@/components/Loading/LoadingStatic";
 
+import { TranslationProvider } from "@/hooks/use-translation";
+
 export function Providers({ children }) {
+  console.log("FE Version: 1.0.4");
+
   return (
     <Suspense fallback={<LoadingStatic />}>
-      <TranslationProvider>
-        {children}
-      </TranslationProvider>
+      <TranslationProvider>{children}</TranslationProvider>
     </Suspense>
   );
 }
