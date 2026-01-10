@@ -69,7 +69,7 @@ const DetailPembayaranPage = () => {
     discount: data?.packageDetail?.promo?.discount
       ? `-${formatPrice(data.packageDetail.promo.discount)}`
       : null,
-    total: formatPrice(data?.totalPrice),
+    total: formatPrice(data?.price),
     paymentMethod: data?.paymentMethod?.name || null,
   };
 
@@ -80,7 +80,7 @@ const DetailPembayaranPage = () => {
     paymentMethodIcon: data?.paymentMethod?.icon,
     paymentChannel: data?.paymentMethod?.channel,
     vaNumber: data?.payment?.vaNumber || data?.vaNumber,
-    totalPrice: data?.totalPrice,
+    totalPrice: data?.price,
   };
 
   if (isLoading) {

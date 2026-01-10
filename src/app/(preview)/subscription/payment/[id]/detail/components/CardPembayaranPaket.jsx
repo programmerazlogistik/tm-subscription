@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 
-import Button from "@/components/Button/Button";
+import { toast } from "@muatmuat/ui/Toaster";
 
-import { toast } from "@/lib/toast";
+import Button from "@/components/Button/Button";
 
 const CardPembayaranPaket = ({ data }) => {
   // Helper for currency
@@ -127,7 +127,7 @@ const CardPembayaranPaket = ({ data }) => {
               onClick={() =>
                 handleCopy(String(totalPrice), "Total Tagihan berhasil disalin")
               }
-              className="flex cursor-pointer items-center gap-1 text-sm font-semibold text-[#176CF7] hover:text-[#1259CC]"
+              className="flex cursor-pointer items-center gap-1 text-xs font-semibold text-[#176CF7] hover:text-[#1259CC]"
             >
               Salin
               <Image src="/svg/salin.svg" alt="copy" width={16} height={16} />
