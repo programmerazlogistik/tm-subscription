@@ -1,12 +1,61 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { toast } from "@muatmuat/ui/Toaster";
 
 import Button from "@/components/Button/Button";
 
+import { useCancelPurchase } from "@/hooks/Payment/use-cancel-purchase";
+
 const CardPembayaranPaket = ({ data }) => {
+  const router = useRouter();
+  const { cancelPurchase, isLoading: isCancelling } = useCancelPurchase();
+  const [timeRemaining, setTimeRemaining] = useState("--:--:--");
+
+  // Calculate and format time remaining
+  useEffect(() => {
+    if (!data?.expirationDate) {
+      setTimeRemaining("--:--:--");
+      return;
+    }
+
+    const calculateTimeRemaining = () => {
+      const now = new Date().getTime();
+      const expiration = new Date(data.expirationDate).getTime();
+      const diff = expiration - now;
+
+      if (diff <= 0) {
+        setTimeRemaining("00:00:00");
+        return false; // Stop the interval
+      }
+
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      setTimeRemaining(
+        `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
+      );
+      return true; // Continue the interval
+    };
+
+    // Initial calculation
+    calculateTimeRemaining();
+
+    // Update every second
+    const interval = setInterval(() => {
+      const shouldContinue = calculateTimeRemaining();
+      if (!shouldContinue) {
+        clearInterval(interval);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [data?.expirationDate]);
+
   // Helper for currency
   const formatPrice = (price) => {
     return new Intl.NumberFormat("id-ID", {
@@ -46,6 +95,27 @@ const CardPembayaranPaket = ({ data }) => {
     }
   };
 
+  // Handle cancel purchase
+  const handleCancelPurchase = async () => {
+    if (!data?.purchaseId) {
+      toast.error("ID pembelian tidak ditemukan");
+      return;
+    }
+
+    try {
+      await cancelPurchase({
+        purchaseId: data.purchaseId,
+        cancelReason: "Tidak jadi beli",
+      });
+      toast.success("Pembelian paket berhasil dibatalkan");
+      router.push("/subscription");
+    } catch (err) {
+      toast.error(
+        err?.response?.data?.Message?.Text || "Gagal membatalkan pembelian"
+      );
+    }
+  };
+
   const {
     expirationDate,
     paymentMethodName,
@@ -82,8 +152,7 @@ const CardPembayaranPaket = ({ data }) => {
               width={16}
               height={16}
             />
-            {/* Timer logic could be added here later */}
-            --:--:--
+            {timeRemaining}
           </div>
         </div>
       </div>
@@ -162,8 +231,13 @@ const CardPembayaranPaket = ({ data }) => {
         >
           Cetak Invoice
         </Button>
-        <Button variant="muatparts-error-secondary" className="w-full">
-          Batalkan Pembelian
+        <Button
+          variant="muatparts-error-secondary"
+          className="w-full"
+          onClick={handleCancelPurchase}
+          disabled={isCancelling}
+        >
+          {isCancelling ? "Membatalkan..." : "Batalkan Pembelian"}
         </Button>
       </div>
     </div>

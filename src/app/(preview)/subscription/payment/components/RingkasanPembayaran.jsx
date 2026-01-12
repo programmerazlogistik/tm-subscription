@@ -25,7 +25,7 @@ const RingkasanPembayaran = ({ current, packageId }) => {
     }).format(price);
   };
 
-  const finalPrice = current.rawPrice - (current.discount || 0);
+  const finalPrice = current.rawPrice;
 
   const handleProceedPayment = async () => {
     try {

@@ -75,6 +75,7 @@ const DetailPembayaranPage = () => {
 
   // Data for CardPembayaranPaket
   const paymentData = {
+    purchaseId: data?.id,
     expirationDate: data?.expirationDate || data?.payment?.expiredAt,
     paymentMethodName: data?.paymentMethod?.name,
     paymentMethodIcon: data?.paymentMethod?.icon,
