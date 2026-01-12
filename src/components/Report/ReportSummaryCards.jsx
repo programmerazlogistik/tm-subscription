@@ -1,8 +1,7 @@
 "use client";
 
+import { InfoTooltip } from "@muatmuat/ui/Tooltip";
 import { Info } from "lucide-react";
-
-import { InfoTooltip } from "@/components/Form/InfoTooltip";
 
 export default function ReportSummaryCards({
   items = [],

@@ -1,6 +1,6 @@
 "use client";
 
-import { InfoTooltip } from "@/components/Form/InfoTooltip";
+import { InfoTooltip } from "@muatmuat/ui/Tooltip";
 
 import { cn } from "@/lib/utils";
 

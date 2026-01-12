@@ -1,10 +1,11 @@
 import Link from "next/link";
 
+import { InfoTooltip } from "@muatmuat/ui/Tooltip";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 import { cn } from "@/lib/utils";
 
-import { InfoTooltip } from "../Form/InfoTooltip";
 import IconComponent from "../IconComponent/IconComponent";
 
 /**

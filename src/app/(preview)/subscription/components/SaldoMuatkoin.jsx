@@ -3,8 +3,9 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { InfoTooltip } from "@muatmuat/ui/Tooltip";
+
 import Button from "@/components/Button/Button";
-import { InfoTooltip } from "@/components/Form/InfoTooltip";
 
 import { useGetBalance } from "@/hooks/Subscription/use-get-balance";
 

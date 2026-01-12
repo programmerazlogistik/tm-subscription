@@ -10,10 +10,10 @@ import {
   ModalHeader,
   ModalTitle,
 } from "@muatmuat/ui/Modal";
+import { InfoTooltip } from "@muatmuat/ui/Tooltip";
 import { Wallet } from "lucide-react";
 
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
-import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import { Slider } from "@/components/Slider/Slider";
 
 import { useGetPurchaseHistory } from "@/hooks/Payment/use-get-purchase-history";

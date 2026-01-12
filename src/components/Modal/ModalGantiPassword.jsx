@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 
+import { InfoTooltip } from "@muatmuat/ui/Tooltip";
+
 import Button from "../Button/Button";
 import { FormContainer, FormLabel } from "../Form/Form";
-import { InfoTooltip } from "../Form/InfoTooltip";
 import Input from "../Form/Input";
 import IconComponent from "../IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "./Modal";

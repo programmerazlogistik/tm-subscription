@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 
+import { InfoTooltip } from "@muatmuat/ui/Tooltip";
+
 import { useTranslation } from "@/hooks/use-translation";
 
 import { cn } from "@/lib/utils";
 
 import Button from "../Button/Button";
-import { InfoTooltip } from "../Form/InfoTooltip";
 import { Modal, ModalContent, ModalTitle, ModalTrigger } from "../Modal/Modal";
 
 const LocationItem = ({ location, isLast, appearance }) => {

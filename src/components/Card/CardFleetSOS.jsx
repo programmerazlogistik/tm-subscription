@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import { InfoTooltip } from "@muatmuat/ui/Tooltip";
 import {
   AlertTriangle,
   ChevronDown,
@@ -14,7 +15,6 @@ import {
 } from "lucide-react";
 
 import Button from "@/components/Button/Button";
-import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import {
   LightboxPreview,
   LightboxProvider,
