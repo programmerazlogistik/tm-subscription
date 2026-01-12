@@ -127,8 +127,10 @@ const Content = ({ children, className, effect = "fade" }) => {
   const { items, currentSlide, nextSlide, prevSlide } = useSlider();
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
   const minSwipeDistance = 50;
 
+  // Touch handlers
   const handleTouchStart = (e) => setTouchStart(e.targetTouches[0].clientX);
   const handleTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
   const handleTouchEnd = () => {
@@ -143,6 +145,49 @@ const Content = ({ children, className, effect = "fade" }) => {
     setTouchEnd(null);
   };
 
+  // Mouse drag handlers - only prevent clicks when actually dragging
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setTouchStart(e.clientX);
+    setTouchEnd(null);
+    // Don't preventDefault here to allow clicks to work
+  };
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    setTouchEnd(e.clientX);
+  };
+  const handleMouseUp = (e) => {
+    if (!isDragging) return;
+
+    const hasMoved =
+      touchStart && touchEnd && Math.abs(touchStart - touchEnd) > 5;
+
+    if (hasMoved) {
+      // It was a drag, not a click - prevent the click event
+      e.preventDefault();
+      e.stopPropagation();
+
+      const distance = touchStart - touchEnd;
+      if (distance > minSwipeDistance) {
+        nextSlide();
+      } else if (distance < -minSwipeDistance) {
+        prevSlide();
+      }
+    }
+    // If no significant movement, let the click event propagate normally
+
+    setIsDragging(false);
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
+  const handleMouseLeave = () => {
+    if (isDragging) {
+      setIsDragging(false);
+      setTouchStart(null);
+      setTouchEnd(null);
+    }
+  };
+
   if (effect === "slide") {
     return (
       <div
@@ -150,6 +195,11 @@ const Content = ({ children, className, effect = "fade" }) => {
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+        style={{ cursor: isDragging ? "grabbing" : "grab" }}
       >
         <div
           className="flex w-full transition-transform duration-300 ease-out"
@@ -177,6 +227,11 @@ const Content = ({ children, className, effect = "fade" }) => {
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseLeave}
+      style={{ cursor: isDragging ? "grabbing" : "grab" }}
     >
       {items.map((item, index) => (
         <div
@@ -216,7 +271,7 @@ const DesktopNavigation = ({
   return (
     <div
       className={cn(
-        "absolute inset-x-0 top-1/2 z-10 mt-3 flex -translate-y-1/2 justify-between",
+        "pointer-events-none absolute inset-x-0 top-1/2 z-10 mt-3 flex -translate-y-1/2 justify-between",
         className
       )}
     >
@@ -224,7 +279,7 @@ const DesktopNavigation = ({
         onClick={prevSlide}
         disabled={isAnimating || !canGoPrev}
         className={cn(
-          "text-primary-700",
+          "pointer-events-auto text-primary-700",
           !canGoPrev && "cursor-not-allowed opacity-30",
           prevButtonClassName
         )}
@@ -236,7 +291,7 @@ const DesktopNavigation = ({
         onClick={nextSlide}
         disabled={isAnimating || !canGoNext}
         className={cn(
-          "text-primary-700",
+          "pointer-events-auto text-primary-700",
           !canGoNext && "cursor-not-allowed opacity-30",
           nextButtonClassName
         )}

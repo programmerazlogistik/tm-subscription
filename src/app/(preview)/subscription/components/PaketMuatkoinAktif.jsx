@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 
 import { Calendar } from "lucide-react";
@@ -36,6 +37,8 @@ const transformPackageData = (pkg) => ({
 });
 
 const PaketMuatkoinAktif = () => {
+  const router = useRouter();
+
   // Fetch paid purchase history
   const { data: apiResponse, isLoading } = useGetPurchaseHistory({
     status: "paid",
@@ -58,6 +61,10 @@ const PaketMuatkoinAktif = () => {
     }
     return chunks;
   }, [activePackages]);
+
+  const handleCardClick = (pkgId) => {
+    router.push(`/subscription/payment/${pkgId}/detail`);
+  };
 
   if (isLoading) {
     return (
@@ -122,7 +129,8 @@ const PaketMuatkoinAktif = () => {
                   {items.map((pkg) => (
                     <div
                       key={pkg.id}
-                      className="flex h-[123px] w-[272px] shrink-0 flex-col gap-3 rounded-xl border border-[#A8A8A8] bg-white p-3"
+                      onClick={() => handleCardClick(pkg.id)}
+                      className="flex h-[123px] w-[272px] shrink-0 cursor-pointer flex-col gap-3 rounded-xl border border-[#A8A8A8] bg-white p-3 transition-shadow hover:shadow-md"
                     >
                       <div className="flex h-[11px] items-center text-[16px] font-semibold leading-[120%] text-[#1B1B1B]">
                         {pkg.name}

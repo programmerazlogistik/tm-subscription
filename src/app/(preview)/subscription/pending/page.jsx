@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 
+import { InputSearch } from "@/components/InputSearch/InputSearch";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import Pagination from "@/components/Pagination/Pagination";
 
@@ -55,54 +56,50 @@ const PendingSubscriptionPage = () => {
         </PageTitle>
 
         {/* Search & Sort */}
-        <div className="flex gap-4">
-          <div className="relative flex-1">
-            <input
-              type="text"
-              placeholder="Cari Riwayat Penggunaan muatkoin"
-              className="w-full rounded-md border border-neutral-400 py-2.5 pl-10 pr-4 text-sm text-neutral-900 placeholder-neutral-500 focus:border-[#176CF7] focus:outline-none"
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
+        <div className="flex items-center justify-between">
+          <div className="w-[328px]">
+            <InputSearch
+              placeholder="Cari Paket Menunggu Pembayaran"
+              searchValue={search}
+              setSearchValue={(value) => {
+                setSearch(value);
                 setCurrentPage(1);
               }}
+              hideDropdown={true}
+              appearance={{
+                inputClassName: "!h-8 !py-0",
+              }}
             />
-            <div className="absolute left-3 top-1/2 -translate-y-1/2">
-              <Image
-                src="/svg/search.svg"
-                alt="search"
-                width={20}
-                height={20}
-              />
-            </div>
           </div>
 
-          <button
-            className="flex items-center gap-2 rounded-md border border-neutral-400 bg-white px-4 py-2.5 text-sm font-semibold text-neutral-900"
-            onClick={toggleSort}
-          >
-            <Image
-              src="/svg/sorting-icon.svg"
-              alt="sort"
-              width={16}
-              height={16}
-            />
-            Urutkan
-            <Image
-              src="/svg/chevron-down.svg"
-              alt="chevron"
-              width={16}
-              height={16}
-            />
-          </button>
-          <button
-            className="flex items-center justify-center rounded-md border border-neutral-400 bg-white px-3 py-2.5"
-            onClick={toggleSort}
-          >
-            <span className="text-sm font-bold">
-              {sort === "ASC" ? "A-Z" : "Z-A"}
-            </span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              className="flex h-8 items-center gap-2 rounded-md border border-neutral-400 bg-white px-4 text-sm font-semibold text-neutral-900"
+              onClick={toggleSort}
+            >
+              <Image
+                src="/svg/sorting-icon.svg"
+                alt="sort"
+                width={16}
+                height={16}
+              />
+              Urutkan
+              <Image
+                src="/svg/chevron-down.svg"
+                alt="chevron"
+                width={16}
+                height={16}
+              />
+            </button>
+            <button
+              className="flex h-8 items-center justify-center rounded-md border border-neutral-400 bg-white px-3"
+              onClick={toggleSort}
+            >
+              <span className="text-sm font-bold">
+                {sort === "ASC" ? "A-Z" : "Z-A"}
+              </span>
+            </button>
+          </div>
         </div>
 
         {/* List */}

@@ -17,11 +17,29 @@ const CardPembayaranPaket = ({ data }) => {
     }).format(price || 0);
   };
 
-  // Copy to clipboard function
-  const handleCopy = async (text, message) => {
+  // Copy to clipboard function - uses execCommand for iframe compatibility
+  const handleCopy = (text, message) => {
     try {
-      await navigator.clipboard.writeText(text);
-      toast.success(message);
+      // Use execCommand method which works in iframes
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      // Prevent scrolling and make invisible
+      textArea.style.position = "fixed";
+      textArea.style.left = "-9999px";
+      textArea.style.top = "-9999px";
+      textArea.style.opacity = "0";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+
+      const successful = document.execCommand("copy");
+      document.body.removeChild(textArea);
+
+      if (successful) {
+        toast.success(message);
+      } else {
+        toast.error("Gagal menyalin");
+      }
     } catch (err) {
       console.error("Failed to copy:", err);
       toast.error("Gagal menyalin");

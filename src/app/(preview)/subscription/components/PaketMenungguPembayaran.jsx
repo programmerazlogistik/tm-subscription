@@ -234,9 +234,8 @@ const PaketMenungguPembayaran = () => {
               )}
             </Slider.Content>
 
-            {/* Navigation Buttons - Absolute positioned on the sides */}
             <Slider.DesktopNavigation
-              className="pointer-events-none absolute -left-[18px] top-1/2 z-10 w-[calc(100%+36px)] -translate-y-1/2 px-0"
+              className="-left-[18px] -mt-2 w-[calc(100%+36px)] px-0"
               prevButtonClassName="scale-[0.6] rounded-full border border-neutral-200 bg-white p-1.5 shadow-sm hover:bg-neutral-50 disabled:opacity-0"
               nextButtonClassName="scale-[0.6] rounded-full border border-neutral-200 bg-white p-1.5 shadow-sm hover:bg-neutral-50 disabled:opacity-0"
             />

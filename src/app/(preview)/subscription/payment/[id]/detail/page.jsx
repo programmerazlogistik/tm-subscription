@@ -157,9 +157,7 @@ const DetailPembayaranPage = () => {
     <div className="relative min-h-screen bg-white p-6">
       <div className="mx-auto max-w-5xl">
         <div className="mb-6">
-          <PageTitle withBack={true} backUrl="/subscription/payment">
-            Detail Pembayaran Langganan
-          </PageTitle>
+          <PageTitle withBack={true}>Detail Pembayaran Langganan</PageTitle>
         </div>
       </div>
 
