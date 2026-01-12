@@ -1,8 +1,14 @@
+"use client";
+
+import { RoutePersistedProvider } from "@/providers/RoutePersistedProvider";
+
 const SubscriptionLayout = ({ children }) => {
   return (
-    <div className="">
-      <div className="mx-auto max-w-[1008px]">{children}</div>
-    </div>
+    <RoutePersistedProvider>
+      <div className="">
+        <div className="mx-auto max-w-[1008px]">{children}</div>
+      </div>
+    </RoutePersistedProvider>
   );
 };
 

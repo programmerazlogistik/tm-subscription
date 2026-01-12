@@ -180,8 +180,8 @@ const PaketMuatkoinAktif = () => {
 
             <Slider.DesktopNavigation
               className="-left-[18px] -mt-2 w-[calc(100%+36px)] px-0"
-              prevButtonClassName="scale-[0.6] rounded-full border border-neutral-200 bg-white p-1.5 shadow-sm hover:bg-neutral-50 disabled:opacity-0"
-              nextButtonClassName="scale-[0.6] rounded-full border border-neutral-200 bg-white p-1.5 shadow-sm hover:bg-neutral-50 disabled:opacity-0"
+              prevButtonClassName="scale-[0.65] rounded-full border border-neutral-200 bg-white p-1.5 shadow-sm hover:bg-neutral-50 disabled:opacity-0"
+              nextButtonClassName="scale-[0.65] rounded-full border border-neutral-200 bg-white p-1.5 shadow-sm hover:bg-neutral-50 disabled:opacity-0"
             />
 
             <Slider.Indicator

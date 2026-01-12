@@ -17,6 +17,8 @@ import { useGetAvailablePackages } from "@/hooks/Subscription/use-get-available-
 import { useGetFaq } from "@/hooks/Subscription/use-get-faq";
 import { useGetTestimonials } from "@/hooks/Subscription/use-get-testimonials";
 
+import { formatDateWIB } from "@/lib/format-date";
+
 import PricingCard from "./components/PricingCard";
 import TestimonialCard from "./components/TestimonialCard";
 
@@ -28,19 +30,6 @@ const formatPrice = (price) => {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(price);
-};
-
-// Helper function to format testimonial date
-const formatTestimonialDate = (dateString) => {
-  if (!dateString) return "-";
-  return new Date(dateString).toLocaleString("id-ID", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZoneName: "short",
-  });
 };
 
 const BuyPage = () => {
@@ -67,7 +56,7 @@ const BuyPage = () => {
       id: item.id,
       name: item.username,
       text: item.testimonial,
-      date: formatTestimonialDate(item.createdAt),
+      date: formatDateWIB(item.createdAt),
       rating: item.rating,
     }));
   }, [testimonialResponse]);

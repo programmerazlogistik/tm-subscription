@@ -42,6 +42,7 @@ export const getAllTransactions = async ({
   page = 1,
   limit = 10,
   search = "",
+  status = "",
 } = {}) => {
   let result;
   if (USE_MOCK) {
@@ -49,8 +50,9 @@ export const getAllTransactions = async ({
     result = { data: MOCK_DATA };
   } else {
     const searchParam = search ? `&search=${encodeURIComponent(search)}` : "";
+    const statusParam = status ? `&status=${encodeURIComponent(status)}` : "";
     result = await fetcherTM.get(
-      `/v1/tm/buyer_subscription/all-transactions?type=${type}&page=${page}&limit=${limit}${searchParam}`
+      `/v1/tm/buyer_subscription/all-transactions?type=${type}&page=${page}&limit=${limit}${searchParam}${statusParam}`
     );
   }
   return result.data;
@@ -61,14 +63,15 @@ export const useGetAllTransactions = ({
   page = 1,
   limit = 10,
   search = "",
+  status = "",
 } = {}) => {
   const accessToken = useTokenStore((state) => state.accessToken);
 
   return useSWR(
     accessToken
-      ? `get-all-transactions?type=${type}&page=${page}&limit=${limit}&search=${search}`
+      ? `get-all-transactions?type=${type}&page=${page}&limit=${limit}&search=${search}&status=${status}`
       : null,
-    () => getAllTransactions({ type, page, limit, search }),
+    () => getAllTransactions({ type, page, limit, search, status }),
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,

@@ -14,7 +14,7 @@ const SearchNotFound = ({ label, className }) => {
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center gap-[10px]",
+        "flex flex-col items-center justify-center gap-5",
         className
       )}
     >

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { InputSearch } from "@/components/InputSearch/InputSearch";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import Pagination from "@/components/Pagination/Pagination";
+import SearchNotFound from "@/components/SearchNotFound/SearchNotFound";
 
 import { useGetPurchaseHistory } from "@/hooks/Payment/use-get-purchase-history";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -113,8 +114,14 @@ const PendingSubscriptionPage = () => {
               <CardPaketPending key={item.id} data={item} />
             ))
           ) : (
-            <div className="flex items-center justify-center py-12 text-neutral-500">
-              Tidak ada paket menunggu pembayaran
+            <div className="flex flex-col gap-9">
+              {debouncedSearch && (
+                <p className="text-left font-semibold text-neutral-900">
+                  Tidak Ditemukan Hasil Pencarian Dari &quot;{debouncedSearch}
+                  &quot;
+                </p>
+              )}
+              <SearchNotFound />
             </div>
           )}
         </div>

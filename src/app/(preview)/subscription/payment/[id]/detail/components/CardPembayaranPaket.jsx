@@ -10,6 +10,9 @@ import Button from "@/components/Button/Button";
 
 import { useCancelPurchase } from "@/hooks/Payment/use-cancel-purchase";
 
+import { formatDateWIB } from "@/lib/format-date";
+import { printInvoice } from "@/lib/print-invoice";
+
 const CardPembayaranPaket = ({ data }) => {
   const router = useRouter();
   const { cancelPurchase, isLoading: isCancelling } = useCancelPurchase();
@@ -116,6 +119,20 @@ const CardPembayaranPaket = ({ data }) => {
     }
   };
 
+  const handlePrintInvoice = () => {
+    printInvoice({
+      transactionId: data?.transactionId || "-",
+      buyerName: data?.buyerName || "-",
+      topUpDate: data?.transactionDate,
+      packageName: data?.packageName || "-",
+      totalMuatkoin: data?.totalMuatkoin || 0,
+      bonusMuatkoin: data?.bonusMuatkoin || 0,
+      price: data?.price || 0,
+      discount: data?.discount || 0,
+      paymentMethod: data?.paymentMethod?.name || paymentMethodName || "-",
+    });
+  };
+
   const {
     expirationDate,
     paymentMethodName,
@@ -132,16 +149,7 @@ const CardPembayaranPaket = ({ data }) => {
         <div className="flex flex-col gap-2">
           <span className="font-bold text-[#FF7A00]">Bayar Sebelum</span>
           <span className="text-xs font-semibold text-neutral-900">
-            {expirationDate
-              ? new Date(expirationDate).toLocaleString("id-ID", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  timeZoneName: "short",
-                })
-              : "-"}
+            {formatDateWIB(expirationDate)}
           </span>
         </div>
         <div className="mb-auto flex items-center gap-2">
@@ -228,6 +236,7 @@ const CardPembayaranPaket = ({ data }) => {
           variant="muatparts-primary-secondary"
           className="w-full border-[#176CF7] text-[#176CF7]"
           iconLeft="/svg/cetak.svg"
+          onClick={handlePrintInvoice}
         >
           Cetak Invoice
         </Button>

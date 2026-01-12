@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 
 import Button from "@/components/Button/Button";
 
+import { formatDateWIB } from "@/lib/format-date";
+import { printInvoice } from "@/lib/print-invoice";
+
 const CardPaketAktif = ({ data }) => {
   const router = useRouter();
 
@@ -19,19 +22,6 @@ const CardPaketAktif = ({ data }) => {
     startDate,
     packageDetail,
   } = data;
-
-  // Format date helper
-  const formatDate = (dateString) => {
-    if (!dateString) return "-";
-    return new Date(dateString).toLocaleDateString("id-ID", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      timeZoneName: "short",
-    });
-  };
 
   // Format price helper
   const formatPrice = (price) => {
@@ -48,6 +38,20 @@ const CardPaketAktif = ({ data }) => {
     router.push(`/subscription/payment/${purchaseId}/detail`);
   };
 
+  const handlePrintInvoice = () => {
+    printInvoice({
+      transactionId,
+      buyerName: data?.buyerName || "-",
+      topUpDate: startDate,
+      packageName,
+      totalMuatkoin,
+      bonusMuatkoin: data?.bonusMuatkoin || 0,
+      price: packageDetail?.price || 0,
+      discount: packageDetail?.promo?.discount || 0,
+      paymentMethod: data?.paymentMethod?.name || "-",
+    });
+  };
+
   return (
     <div className="flex flex-col rounded-[12px] border border-[#868686] bg-white shadow-muat">
       <div className="flex flex-col gap-5 p-6">
@@ -60,7 +64,7 @@ const CardPaketAktif = ({ data }) => {
             {transactionId}
           </a>
           <span className="text-xs font-medium text-neutral-900">
-            {formatDate(startDate)}
+            {formatDateWIB(startDate)}
           </span>
         </div>
 
@@ -128,7 +132,7 @@ const CardPaketAktif = ({ data }) => {
               Tanggal Kedaluwarsa
             </div>
             <span className="text-sm font-medium text-neutral-900">
-              {formatDate(expirationDate)}
+              {formatDateWIB(expirationDate)}
             </span>
           </div>
 
@@ -166,6 +170,7 @@ const CardPaketAktif = ({ data }) => {
         <Button
           variant="muatparts-primary-secondary"
           className="!h-[33px] !w-[136px] rounded-full border !px-0 text-sm font-semibold"
+          onClick={handlePrintInvoice}
         >
           Cetak Invoice
         </Button>

@@ -17,6 +17,8 @@ import { Slider } from "@/components/Slider/Slider";
 
 import { useGetPurchaseHistory } from "@/hooks/Payment/use-get-purchase-history";
 
+import { formatDateWIB } from "@/lib/format-date";
+
 // Helper function to format price to IDR
 const formatPrice = (price, currency = "IDR") => {
   return new Intl.NumberFormat("id-ID", {
@@ -27,24 +29,11 @@ const formatPrice = (price, currency = "IDR") => {
   }).format(price || 0);
 };
 
-// Helper function to format date
-const formatDate = (dateString) => {
-  if (!dateString) return "-";
-  return new Date(dateString).toLocaleString("id-ID", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZoneName: "short",
-  });
-};
-
 // Transform API data to card format
 const transformPackageData = (pkg) => ({
   id: pkg.id,
   name: `${pkg.packageName} (${pkg.packageDetail?.period || 30} Hari)`,
-  paymentDeadline: formatDate(pkg.expiresAt),
+  paymentDeadline: formatDateWIB(pkg.expiresAt),
   totalMuatkoin: pkg.isUnlimited
     ? "Unlimited"
     : pkg.bonusMuatkoin > 0
@@ -200,7 +189,8 @@ const PaketMenungguPembayaran = () => {
           <Wallet size={14} />
           <span>Paket Menunggu Pembayaran</span>
           <InfoTooltip>
-            Berikut adalah paket yang masih dalam status menunggu pembayaran,
+            Berikut adalah paket yang <br /> masih dalam status menunggu
+            pembayaran, <br />
             silahkan lakukan pembayaran segera.
           </InfoTooltip>
         </div>
@@ -232,8 +222,8 @@ const PaketMenungguPembayaran = () => {
 
           <Slider.DesktopNavigation
             className="-left-[18px] -mt-2 w-[calc(100%+36px)] px-0"
-            prevButtonClassName="scale-[0.6] rounded-full border border-neutral-200 bg-white p-1.5 shadow-sm hover:bg-neutral-50 disabled:opacity-0"
-            nextButtonClassName="scale-[0.6] rounded-full border border-neutral-200 bg-white p-1.5 shadow-sm hover:bg-neutral-50 disabled:opacity-0"
+            prevButtonClassName="scale-[0.65] rounded-full border border-neutral-200 bg-white p-1.5 shadow-sm hover:bg-neutral-50 disabled:opacity-0"
+            nextButtonClassName="scale-[0.65] rounded-full border border-neutral-200 bg-white p-1.5 shadow-sm hover:bg-neutral-50 disabled:opacity-0"
           />
 
           <Slider.Indicator

@@ -48,8 +48,8 @@ const SaldoMuatkoin = ({
             />
             <span>Saldo muatkoin</span>
             <InfoTooltip>
-              Ini adalah sisa saldo muatkoin anda yang dapat anda gunakan untuk
-              membuka semua fitur premium pada transport market
+              Ini adalah sisa saldo muatkoin anda yang <br /> dapat anda gunakan
+              untuk membuka <br /> semua fitur premium pada transport market
             </InfoTooltip>
           </div>
 

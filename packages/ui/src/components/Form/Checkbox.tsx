@@ -57,7 +57,7 @@ export interface CheckboxProps
 export type CheckboxVariant = "blue" | "yellow";
 
 const checkboxStyles = {
-  blue: "border-neutral-600 hover:border-primary-700 disabled:border-neutral-500 data-[state=checked]:border-primary-700 data-[state=checked]:bg-primary-700 data-[state=checked]:text-neutral-50",
+  blue: "border-neutral-600 hover:border-[#176CF7] disabled:border-neutral-500 data-[state=checked]:border-[#176CF7] data-[state=checked]:bg-[#176CF7] data-[state=checked]:text-white",
   yellow:
     "data-[state=checked]:bg-yellow-500 data-[state=checked]:border-yellow-600 data-[state=checked]:text-yellow-900",
 };
@@ -90,7 +90,7 @@ const Checkbox = memo(
           data-slot="checkbox"
           className={cn(
             // Base styles
-            "border-input dark:bg-input/30 data-[state=checked]:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shadow-xs peer size-4 shrink-0 rounded-[4px] border outline-none transition-shadow hover:cursor-pointer focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50",
+            "peer size-5 shrink-0 rounded-md border-2 outline-none transition-shadow hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50",
             checkboxStyles[variant],
             className
           )}

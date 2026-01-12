@@ -6,25 +6,24 @@ import { useState } from "react";
 import { Filter } from "lucide-react";
 
 import Button from "@/components/Button/Button";
+import CheckboxCustom from "@/components/CheckboxCustom/CheckboxCustom";
 import { InputSearch } from "@/components/InputSearch/InputSearch";
 import Pagination from "@/components/Pagination/Pagination";
+import {
+  RightDrawer,
+  RightDrawerBody,
+  RightDrawerClose,
+  RightDrawerContent,
+  RightDrawerFooter,
+  RightDrawerHeader,
+  RightDrawerTitle,
+  RightDrawerTrigger,
+} from "@/components/RightDrawer/RightDrawer";
 
 import { useGetAllTransactions } from "@/hooks/Subscription/use-get-all-transactions";
 
+import { formatDateWIB } from "@/lib/format-date";
 import { cn } from "@/lib/utils";
-
-// Helper function to format date
-const formatDate = (dateString) => {
-  if (!dateString) return "-";
-  return new Date(dateString).toLocaleString("id-ID", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZoneName: "short",
-  });
-};
 
 // Helper function to format price
 const formatPrice = (price, currency = "IDR") => {
@@ -68,11 +67,24 @@ const getStatusLabel = (status) => {
   }
 };
 
+// Filter options for the drawer
+const filterOptions = [
+  { key: "cancelled", label: "Dibatalkan" },
+  { key: "expired", label: "Kedaluwarsa" },
+];
+
 const RiwayatPembelianMuatkoin = () => {
   const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+  const [selectedFilters, setSelectedFilters] = useState([]);
+  const [tempFilters, setTempFilters] = useState([]);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  // Build status filter param
+  const statusParam =
+    selectedFilters.length > 0 ? selectedFilters.join(",") : "";
 
   // Fetch transactions
   const { data: apiResponse, isLoading } = useGetAllTransactions({
@@ -80,6 +92,7 @@ const RiwayatPembelianMuatkoin = () => {
     page: currentPage,
     limit: perPage,
     search: searchValue,
+    status: statusParam,
   });
 
   const transactions = apiResponse?.Data?.transactions ?? [];
@@ -94,10 +107,35 @@ const RiwayatPembelianMuatkoin = () => {
     router.push(`/subscription/payment/${id}/detail`);
   };
 
+  const handleFilterToggle = (filterKey) => {
+    setTempFilters((prev) =>
+      prev.includes(filterKey)
+        ? prev.filter((f) => f !== filterKey)
+        : [...prev, filterKey]
+    );
+  };
+
+  const handleApplyFilters = () => {
+    setSelectedFilters(tempFilters);
+    setCurrentPage(1);
+    setIsDrawerOpen(false);
+  };
+
+  const handleClearFilters = () => {
+    setTempFilters([]);
+  };
+
+  const handleOpenDrawer = () => {
+    setTempFilters(selectedFilters);
+    setIsDrawerOpen(true);
+  };
+
+  const activeFilterCount = selectedFilters.length;
+
   return (
     <div className="flex flex-col gap-6">
       {/* Filters */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center justify-between gap-4">
         <div className="w-[344px]">
           <InputSearch
             placeholder="Cari Riwayat Pembelian muatkoin"
@@ -108,10 +146,75 @@ const RiwayatPembelianMuatkoin = () => {
             }}
           />
         </div>
-        <button className="flex h-[32px] items-center gap-2 rounded-md border border-neutral-400 px-3 py-1.5 text-sm font-semibold text-neutral-800 hover:bg-neutral-50">
-          <Filter size={16} />
-          Filter
-        </button>
+        <RightDrawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+          <RightDrawerTrigger asChild>
+            <button
+              className="flex h-[32px] items-center gap-2 rounded-md border border-neutral-400 px-3 py-1.5 text-sm font-semibold text-neutral-800 hover:bg-neutral-50"
+              onClick={handleOpenDrawer}
+            >
+              <Filter size={16} />
+              Filter
+              {activeFilterCount > 0 && (
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#176CF7] text-xs font-semibold text-white">
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
+          </RightDrawerTrigger>
+          <RightDrawerContent>
+            <RightDrawerHeader>
+              <RightDrawerTitle>Filter</RightDrawerTitle>
+              <button
+                onClick={handleClearFilters}
+                className="text-xs font-medium text-[#176CF7]"
+              >
+                Hapus Semua Filter
+              </button>
+            </RightDrawerHeader>
+            <RightDrawerBody>
+              <div className="flex flex-col gap-6">
+                {/* Status Section */}
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base font-bold text-neutral-900">
+                      Status
+                    </span>
+                    <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-[#176CF7] px-2 text-xs font-semibold text-white">
+                      {tempFilters.length}
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    {filterOptions.map((option) => (
+                      <CheckboxCustom
+                        key={option.key}
+                        label={option.label}
+                        checked={tempFilters.includes(option.key)}
+                        onCheckedChange={() => handleFilterToggle(option.key)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </RightDrawerBody>
+            <RightDrawerFooter>
+              <RightDrawerClose>
+                <Button
+                  variant="muatparts-primary-secondary"
+                  className="h-8 w-[112px]"
+                >
+                  Batal
+                </Button>
+              </RightDrawerClose>
+              <Button
+                variant="muatparts-primary"
+                className="h-8 w-[112px]"
+                onClick={handleApplyFilters}
+              >
+                Terapkan
+              </Button>
+            </RightDrawerFooter>
+          </RightDrawerContent>
+        </RightDrawer>
       </div>
 
       {/* Table */}
@@ -154,7 +257,7 @@ const RiwayatPembelianMuatkoin = () => {
                         {item.transactionId}
                       </span>
                       <span className="text-[10px] font-medium text-[#676767]">
-                        {formatDate(item.date)}
+                        {formatDateWIB(item.date)}
                       </span>
                     </div>
                   </td>

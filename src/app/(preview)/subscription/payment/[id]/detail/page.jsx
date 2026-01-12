@@ -7,6 +7,9 @@ import PageTitle from "@/components/PageTitle/PageTitle";
 
 import { useGetPurchaseDetail } from "@/hooks/Payment/use-get-purchase-detail";
 
+import { formatDateWIB } from "@/lib/format-date";
+import { printInvoice } from "@/lib/print-invoice";
+
 import CaraPembayaran from "./components/CaraPembayaran";
 import CardDetailPaket from "./components/CardDetailPaket";
 import CardPembayaranPaket from "./components/CardPembayaranPaket";
@@ -47,16 +50,7 @@ const DetailPembayaranPage = () => {
   // Data for CardDetailPaket
   const detailData = {
     idTransaksi: data?.transactionId || "-",
-    tanggal: data?.transactionDate
-      ? new Date(data.transactionDate).toLocaleString("id-ID", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-          timeZoneName: "short",
-        })
-      : "-",
+    tanggal: formatDateWIB(data?.transactionDate),
     paket: data?.packageName || "-",
     subUser: data?.packageDetail?.subUsersIncluded
       ? `(Termasuk ${data.packageDetail.subUsersIncluded} Sub User)`
@@ -82,6 +76,20 @@ const DetailPembayaranPage = () => {
     paymentChannel: data?.paymentMethod?.channel,
     vaNumber: data?.payment?.vaNumber || data?.vaNumber,
     totalPrice: data?.price,
+  };
+
+  const handlePrintInvoice = () => {
+    printInvoice({
+      transactionId: data?.transactionId || "-",
+      buyerName: data?.buyerName || "-",
+      topUpDate: data?.transactionDate,
+      packageName: data?.packageName || "-",
+      totalMuatkoin: data?.totalMuatkoin || 0,
+      bonusMuatkoin: data?.bonusMuatkoin || 0,
+      price: data?.price || 0,
+      discount: data?.packageDetail?.promo?.discount || 0,
+      paymentMethod: data?.paymentMethod?.name || "-",
+    });
   };
 
   if (isLoading) {
@@ -182,6 +190,7 @@ const DetailPembayaranPage = () => {
               variant="muatparts-primary-secondary"
               className="w-[165px]"
               iconLeft="/svg/cetak.svg"
+              onClick={handlePrintInvoice}
             >
               Cetak Invoice
             </Button>

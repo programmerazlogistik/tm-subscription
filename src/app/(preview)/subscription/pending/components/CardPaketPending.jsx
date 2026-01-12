@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 
 import Button from "@/components/Button/Button";
 
+import { formatDateWIB } from "@/lib/format-date";
+
 const CardPaketPending = ({ data }) => {
   const router = useRouter();
 
@@ -21,19 +23,6 @@ const CardPaketPending = ({ data }) => {
     packageDetail,
     paymentMethod,
   } = data;
-
-  // Format date helper
-  const formatDate = (dateString) => {
-    if (!dateString) return "-";
-    return new Date(dateString).toLocaleDateString("id-ID", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      timeZoneName: "short",
-    });
-  };
 
   // Format price helper
   const formatPrice = (amount) => {
@@ -75,12 +64,12 @@ const CardPaketPending = ({ data }) => {
               {transactionId}
             </a>
             <span className="text-xs font-medium text-neutral-900">
-              {formatDate(transactionDate)}
+              {formatDateWIB(transactionDate)}
             </span>
           </div>
           {/* Payment deadline badge */}
           <div className="flex h-[24px] items-center justify-center rounded-[6px] bg-[#FFF1A5] px-3 text-xs font-semibold text-[#FF7A00]">
-            Bayar Sebelum {formatDate(expiresAt)}
+            Bayar Sebelum {formatDateWIB(expiresAt)}
           </div>
         </div>
 
