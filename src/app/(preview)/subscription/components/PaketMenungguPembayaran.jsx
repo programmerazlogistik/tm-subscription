@@ -13,7 +13,6 @@ import {
 import { InfoTooltip } from "@muatmuat/ui/Tooltip";
 import { Wallet } from "lucide-react";
 
-import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import { Slider } from "@/components/Slider/Slider";
 
 import { useGetPurchaseHistory } from "@/hooks/Payment/use-get-purchase-history";
@@ -186,6 +185,11 @@ const PaketMenungguPembayaran = () => {
     );
   }
 
+  // Don't render the component if there are no pending packages
+  if (!hasPackages) {
+    return null;
+  }
+
   return (
     <div
       className="flex scroll-mt-24 flex-col overflow-hidden rounded-[12px] border border-[#d7d7d7] bg-white"
@@ -211,48 +215,39 @@ const PaketMenungguPembayaran = () => {
       </div>
 
       <div className="relative mx-auto w-full px-[15px] pb-6 pt-4">
-        {!hasPackages ? (
-          <div className="flex min-h-[160px] items-center justify-center">
-            <DataEmpty
-              title="Belum Ada Paket Menunggu Pembayaran"
-              titleClassname="text-sm font-semibold text-neutral-500 mt-4"
-            />
-          </div>
-        ) : (
-          <Slider.Root items={slides} loop={false} className="group relative">
-            <Slider.Content className="w-full" effect="slide">
-              {(items) => (
-                <div className="flex w-full gap-3">
-                  {items.map((pkg) => (
-                    <PackageCard
-                      key={pkg.id}
-                      pkg={pkg}
-                      onClick={handleCardClick}
-                    />
-                  ))}
-                </div>
-              )}
-            </Slider.Content>
+        <Slider.Root items={slides} loop={false} className="group relative">
+          <Slider.Content className="w-full" effect="slide">
+            {(items) => (
+              <div className="flex w-full gap-3">
+                {items.map((pkg) => (
+                  <PackageCard
+                    key={pkg.id}
+                    pkg={pkg}
+                    onClick={handleCardClick}
+                  />
+                ))}
+              </div>
+            )}
+          </Slider.Content>
 
-            <Slider.DesktopNavigation
-              className="-left-[18px] -mt-2 w-[calc(100%+36px)] px-0"
-              prevButtonClassName="scale-[0.6] rounded-full border border-neutral-200 bg-white p-1.5 shadow-sm hover:bg-neutral-50 disabled:opacity-0"
-              nextButtonClassName="scale-[0.6] rounded-full border border-neutral-200 bg-white p-1.5 shadow-sm hover:bg-neutral-50 disabled:opacity-0"
-            />
+          <Slider.DesktopNavigation
+            className="-left-[18px] -mt-2 w-[calc(100%+36px)] px-0"
+            prevButtonClassName="scale-[0.6] rounded-full border border-neutral-200 bg-white p-1.5 shadow-sm hover:bg-neutral-50 disabled:opacity-0"
+            nextButtonClassName="scale-[0.6] rounded-full border border-neutral-200 bg-white p-1.5 shadow-sm hover:bg-neutral-50 disabled:opacity-0"
+          />
 
-            <Slider.Indicator
-              className="mt-4 gap-1.5"
-              render={({ isActive, onClick }) => (
-                <button
-                  onClick={onClick}
-                  className={`h-2 rounded-full transition-all duration-300 ${
-                    isActive ? "w-6 bg-blue-500" : "w-2 bg-neutral-300"
-                  }`}
-                />
-              )}
-            />
-          </Slider.Root>
-        )}
+          <Slider.Indicator
+            className="mt-4 gap-1.5"
+            render={({ isActive, onClick }) => (
+              <button
+                onClick={onClick}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  isActive ? "w-6 bg-blue-500" : "w-2 bg-neutral-300"
+                }`}
+              />
+            )}
+          />
+        </Slider.Root>
       </div>
 
       <Modal open={isModalOpen} onOpenChange={setIsModalOpen}>
