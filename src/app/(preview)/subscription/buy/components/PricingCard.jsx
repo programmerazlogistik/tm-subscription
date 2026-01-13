@@ -4,7 +4,7 @@ import { formatMuatkoin } from "@/lib/utils/formatters";
 
 // Helper function to format price
 const formatPrice = (price, currency = "IDR") => {
-  if (!price) return null;
+  if (price === null || price === undefined) return null;
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
     currency: currency,
@@ -71,9 +71,11 @@ const PricingCard = ({ data, onBuy }) => {
         <div className="mt-3">
           <div className="flex flex-col gap-1">
             <span className="text-xl font-bold text-neutral-900">
-              {formatPrice(price)}
+              {price === 0 && (!originalPrice || originalPrice === 0)
+                ? "Free"
+                : formatPrice(price)}
             </span>
-            {originalPrice && originalPrice > price && (
+            {originalPrice > price && (
               <span className="text-xxs font-medium text-neutral-600 line-through decoration-neutral-400">
                 {formatPrice(originalPrice)}
               </span>

@@ -1,6 +1,21 @@
 /**
  * Print invoice utility function
  * Opens a new window with the invoice template and triggers print dialog
+ *
+ * @param {Object} invoiceData - Invoice data object
+ * @param {string} invoiceData.transactionId - Transaction/Invoice ID
+ * @param {string} invoiceData.buyerName - Buyer name
+ * @param {string} invoiceData.topUpDate - Date of purchase (ISO string)
+ * @param {string} invoiceData.packageName - Package/product name
+ * @param {number} invoiceData.totalMuatkoin - Total muatkoin/credit (for credit purchases)
+ * @param {number} invoiceData.bonusMuatkoin - Bonus muatkoin/credit
+ * @param {number} invoiceData.price - Price
+ * @param {number} invoiceData.discount - Discount amount
+ * @param {string} invoiceData.paymentMethod - Payment method
+ * @param {string} invoiceData.status - Payment status: "paid" | "unpaid" | "cancelled"
+ * @param {string} invoiceData.validityStart - Subscription start date (for subscription invoices)
+ * @param {string} invoiceData.validityEnd - Subscription end date (for subscription invoices)
+ * @param {string} invoiceData.invoiceType - Type of invoice: "credit" | "subscription"
  */
 export const printInvoice = (invoiceData) => {
   const {
@@ -13,10 +28,14 @@ export const printInvoice = (invoiceData) => {
     price = 0,
     discount = 0,
     paymentMethod = "-",
+    status = "paid", // "paid" | "unpaid" | "cancelled"
+    validityStart = null,
+    validityEnd = null,
+    invoiceType = "credit", // "credit" | "subscription"
   } = invoiceData || {};
 
   const formatPrice = (price) => {
-    if (!price && price !== 0) return "-";
+    if (price === null || price === undefined) return "-";
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
       currency: "IDR",
@@ -42,6 +61,16 @@ export const printInvoice = (invoiceData) => {
     return `${formatted} WIB`;
   };
 
+  const formatShortDate = (dateString) => {
+    if (!dateString) return "-";
+    return new Date(dateString).toLocaleDateString("id-ID", {
+      timeZone: "Asia/Jakarta",
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
   const formatDownloadDate = () => {
     const formatted = new Date()
       .toLocaleDateString("id-ID", {
@@ -61,13 +90,57 @@ export const printInvoice = (invoiceData) => {
   const totalPesanan = price - discount;
   const totalTagihan = totalPesanan;
 
-  /* Only show if there are credits */
-  const muatkoinDisplay =
-    totalMuatkoin > 0
-      ? bonusMuatkoin > 0
+  // Watermark configuration based on status
+  const getWatermarkConfig = (status) => {
+    switch (status) {
+      case "paid":
+      case "success":
+        return {
+          text: "LUNAS",
+          color: "#4CAF50",
+        };
+      case "unpaid":
+      case "pending":
+        return {
+          text: "BELUM LUNAS",
+          color: "#ef4444",
+        };
+      case "cancelled":
+        return {
+          text: "DIBATALKAN",
+          color: "#ef4444",
+        };
+      default:
+        return {
+          text: "LUNAS",
+          color: "#4CAF50",
+        };
+    }
+  };
+
+  const watermark = getWatermarkConfig(status);
+
+  // Product detail based on invoice type
+  const getProductDetail = () => {
+    if (invoiceType === "subscription" && validityStart && validityEnd) {
+      return `Masa Berlaku : ${formatShortDate(validityStart)} - ${formatShortDate(validityEnd)}`;
+    }
+    // Credit invoice
+    if (totalMuatkoin > 0) {
+      return bonusMuatkoin > 0
         ? `${totalMuatkoin - bonusMuatkoin} Credit + Bonus ${bonusMuatkoin} Credit`
-        : `${totalMuatkoin} Credit`
-      : "";
+        : `${totalMuatkoin} Credit`;
+    }
+    return "";
+  };
+
+  const productDetail = getProductDetail();
+
+  // Date label based on invoice type
+  const dateLabel =
+    invoiceType === "subscription"
+      ? "Tanggal Pesanan"
+      : "Tanggal Top-up Credit";
 
   const invoiceHTML = `
     <!DOCTYPE html>
@@ -94,8 +167,6 @@ export const printInvoice = (invoiceData) => {
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
-          align-items: flex-start;
-          /* border-bottom removed from header */
           margin-bottom: 8px;
         }
         .logo-img {
@@ -124,7 +195,7 @@ export const printInvoice = (invoiceData) => {
           padding: 8px 0;
           font-size: 10px;
           color: #666;
-          border-bottom: 1px solid #e5e5e5; /* Added border here */
+          border-bottom: 1px solid #e5e5e5;
           padding-bottom: 16px;
           margin-bottom: 16px;
         }
@@ -176,26 +247,26 @@ export const printInvoice = (invoiceData) => {
           position: relative;
           margin-top: 16px;
         }
-        /* Lunas watermark restored */
-        .lunas-watermark {
+        .status-watermark {
           position: absolute;
           left: 50%;
           top: 50%;
           transform: translate(-50%, -50%) rotate(-15deg);
-          border: 4px solid #4CAF50;
+          border: 4px solid ${watermark.color};
           border-radius: 12px;
           padding: 12px 24px;
           opacity: 0.2;
           z-index: 0;
           pointer-events: none;
-          max-width: 90%; /* Prevent overflow */
+          max-width: 90%;
         }
-        .lunas-text {
+        .status-text {
           font-size: 32px;
           font-weight: 800;
           letter-spacing: 4px;
-          color: #4CAF50;
+          color: ${watermark.color};
           text-transform: uppercase;
+          white-space: nowrap;
         }
         .totals-wrapper {
           margin-left: auto;
@@ -285,7 +356,7 @@ export const printInvoice = (invoiceData) => {
       <div class="info-grid">
         <span class="info-label">Pembeli</span>
         <span class="info-value">${buyerName}</span>
-        <span class="info-label">Tanggal Top-up Credit</span>
+        <span class="info-label">${dateLabel}</span>
         <span class="info-value">${formatDate(topUpDate)}</span>
       </div>
 
@@ -305,7 +376,7 @@ export const printInvoice = (invoiceData) => {
       <div class="product-row">
         <div>
           <div class="product-name">${packageName}</div>
-          <div class="product-detail">${muatkoinDisplay}</div>
+          ${productDetail ? `<div class="product-detail">${productDetail}</div>` : ""}
         </div>
         <div class="product-price">${formatPrice(price)}</div>
       </div>
@@ -313,8 +384,8 @@ export const printInvoice = (invoiceData) => {
       <!-- Totals -->
       <div class="totals-container">
         <div class="totals-wrapper">
-          <div class="lunas-watermark">
-            <div class="lunas-text">LUNAS</div>
+          <div class="status-watermark">
+            <div class="status-text">${watermark.text}</div>
           </div>
           <div class="total-row">
             <span class="total-label">Total Harga</span>

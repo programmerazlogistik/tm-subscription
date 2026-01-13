@@ -64,6 +64,7 @@ const DetailPembayaranPage = () => {
     packageName: data?.packageName,
     discount: data?.packageDetail?.promo?.discount,
     qrisData: data?.payment?.qrisData,
+    status: data?.status, // For invoice watermark
   };
 
   const handlePrintInvoice = () => {
@@ -91,6 +92,8 @@ const DetailPembayaranPage = () => {
       price: originalPrice,
       discount: discountAmount,
       paymentMethod: data?.paymentMethod?.name || "-",
+      status: data?.status || "pending",
+      invoiceType: "credit",
     });
   };
 

@@ -2,7 +2,7 @@ import Image from "next/image";
 
 // Helper function to format price
 const formatPrice = (price, currency = "IDR") => {
-  if (!price) return null;
+  if (price === null || price === undefined) return null;
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
     currency: currency,
@@ -65,9 +65,11 @@ const PaketYangDipilih = ({ data }) => {
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-[18px] font-bold text-[#1B1B1B]">
-              {formatPrice(price)}
+              {price === 0 && (!originalPrice || originalPrice === 0)
+                ? "Free"
+                : formatPrice(price)}
             </span>
-            {originalPrice && originalPrice > price && (
+            {originalPrice > price && (
               <span className="text-sm text-[#868686] line-through">
                 {formatPrice(originalPrice)}
               </span>

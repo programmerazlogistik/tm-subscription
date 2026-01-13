@@ -50,6 +50,8 @@ const CardPaketAktif = ({ data }) => {
       price: packageDetail?.price || 0,
       discount: packageDetail?.promo?.discount || 0,
       paymentMethod: data?.paymentMethod?.name || "-",
+      status: "paid", // Active packages are already paid
+      invoiceType: "credit",
     });
   };
 

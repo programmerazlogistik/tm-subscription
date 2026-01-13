@@ -126,9 +126,9 @@ const CardPembayaranPaket = ({ data }) => {
     const pkgDetail = data?.packageDetail || {};
     const promo = pkgDetail.promo || {};
 
-    // Pricing
-    const originalPrice = data?.originalPrice || data?.price || 0;
-    const finalPrice = data?.price || 0;
+    // Pricing - NOTE: paymentData passes totalPrice, not price
+    const originalPrice = data?.originalPrice || data?.totalPrice || 0;
+    const finalPrice = data?.totalPrice || data?.price || 0;
     const discountAmount = originalPrice - finalPrice;
 
     // Muatkoin
@@ -138,7 +138,7 @@ const CardPembayaranPaket = ({ data }) => {
 
     printInvoice({
       transactionId: data?.transactionId || "-",
-      buyerName: data?.buyerName || "-", // Note: buyerName seems missing in API response, keeping fallback
+      buyerName: data?.buyerName || "-",
       topUpDate: data?.transactionDate,
       packageName: data?.packageName || "-",
       totalMuatkoin: totalMuatkoin,
@@ -146,6 +146,8 @@ const CardPembayaranPaket = ({ data }) => {
       price: originalPrice,
       discount: discountAmount,
       paymentMethod: data?.paymentMethod?.name || paymentMethodName || "-",
+      status: data?.status || "pending",
+      invoiceType: "credit",
     });
   };
 
