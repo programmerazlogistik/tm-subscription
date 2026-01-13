@@ -158,7 +158,7 @@ export const ModalContent = ({
                   "size-6 md:size-5",
                   iconClassnames[type] || iconClassnames.muattrans
                 )}
-                src="/icons/close20.svg"
+                src="/icons/close.svg"
               />
             </button>
           </Dialog.Close>

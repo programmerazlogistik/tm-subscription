@@ -108,6 +108,8 @@ export const getUsageHistory = async ({
   limit = 10,
   search = "",
   usageType = "",
+  startDate = "",
+  endDate = "",
 } = {}) => {
   let result;
   if (USE_MOCK) {
@@ -118,8 +120,14 @@ export const getUsageHistory = async ({
     const usageTypeParam = usageType
       ? `&usageType=${encodeURIComponent(usageType)}`
       : "";
+    const startDateParam = startDate
+      ? `&startDate=${encodeURIComponent(startDate)}`
+      : "";
+    const endDateParam = endDate
+      ? `&endDate=${encodeURIComponent(endDate)}`
+      : "";
     result = await fetcherTM.get(
-      `/v1/tm/buyer_subscription/usage-history?period=${period}&page=${page}&limit=${limit}${searchParam}${usageTypeParam}`
+      `/v1/tm/buyer_subscription/usage-history?period=${period}&page=${page}&limit=${limit}${searchParam}${usageTypeParam}${startDateParam}${endDateParam}`
     );
   }
   return result.data;
@@ -131,14 +139,25 @@ export const useGetUsageHistory = ({
   limit = 10,
   search = "",
   usageType = "",
+  startDate = "",
+  endDate = "",
 } = {}) => {
   const accessToken = useTokenStore((state) => state.accessToken);
 
   return useSWR(
     accessToken
-      ? `get-usage-history?period=${period}&page=${page}&limit=${limit}&search=${search}&usageType=${usageType}`
+      ? `get-usage-history?period=${period}&page=${page}&limit=${limit}&search=${search}&usageType=${usageType}&startDate=${startDate}&endDate=${endDate}`
       : null,
-    () => getUsageHistory({ period, page, limit, search, usageType }),
+    () =>
+      getUsageHistory({
+        period,
+        page,
+        limit,
+        search,
+        usageType,
+        startDate,
+        endDate,
+      }),
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,

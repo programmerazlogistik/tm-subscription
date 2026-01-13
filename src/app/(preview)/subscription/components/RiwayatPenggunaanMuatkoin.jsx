@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { format, subDays } from "date-fns";
+
 import Button from "@/components/Button/Button";
 import CheckboxCustom from "@/components/CheckboxCustom/CheckboxCustom";
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
@@ -87,9 +89,26 @@ const RiwayatPenggunaanMuatkoin = () => {
   const [selectedFilters, setSelectedFilters] = useState([]);
   const [tempFilters, setTempFilters] = useState([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [selectedPeriod, setSelectedPeriod] = useState(PERIOD_OPTIONS[0]);
 
   // Debounce search value
   const debouncedSearch = useDebounce(searchValue, 500);
+
+  // Calculate dates based on period presets
+  let startDateParam = selectedPeriod?.iso_start_date || "";
+  let endDateParam = selectedPeriod?.iso_end_date || "";
+
+  if (!selectedPeriod?.range && selectedPeriod?.value !== "all") {
+    const today = new Date();
+    endDateParam = format(today, "yyyy-MM-dd");
+    if (selectedPeriod?.value === "today") {
+      startDateParam = format(today, "yyyy-MM-dd");
+    } else if (selectedPeriod?.value === "30_days") {
+      startDateParam = format(subDays(today, 30), "yyyy-MM-dd");
+    } else if (selectedPeriod?.value === "90_days") {
+      startDateParam = format(subDays(today, 90), "yyyy-MM-dd");
+    }
+  }
 
   // Build usageType filter param
   const usageTypeParam =
@@ -97,7 +116,9 @@ const RiwayatPenggunaanMuatkoin = () => {
 
   // Fetch usage history
   const { data: apiResponse, isLoading } = useGetUsageHistory({
-    period: "all",
+    period: selectedPeriod?.value || "all",
+    startDate: startDateParam,
+    endDate: endDateParam,
     page: currentPage,
     limit: perPage,
     search: debouncedSearch,
@@ -139,11 +160,12 @@ const RiwayatPenggunaanMuatkoin = () => {
 
   // Check if any filters are applied
   const hasFiltersApplied =
-    debouncedSearch.length > 0 || selectedFilters.length > 0;
+    debouncedSearch.length > 0 ||
+    selectedFilters.length > 0 ||
+    selectedPeriod?.value !== "all";
 
-  // Determine if we should show controls (data exists OR filters are applied)
-  const showControls =
-    !isLoading && (usageHistory.length > 0 || hasFiltersApplied);
+  // Determine if we should show controls (always show when not loading to allow users to change filters/period)
+  const showControls = !isLoading;
 
   return (
     <div className="relative flex flex-col gap-6">
@@ -152,7 +174,11 @@ const RiwayatPenggunaanMuatkoin = () => {
         <div className="absolute -top-16 right-0">
           <DropdownPeriode
             options={PERIOD_OPTIONS}
-            onSelect={(val) => console.log("Selected period:", val)}
+            onSelect={(val) => {
+              setSelectedPeriod(val);
+              setCurrentPage(1);
+            }}
+            value={selectedPeriod}
             width="w-[180px]"
           />
         </div>

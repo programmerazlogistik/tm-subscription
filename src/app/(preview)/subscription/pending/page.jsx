@@ -87,6 +87,7 @@ const PendingSubscriptionPage = () => {
             onSortFieldChange={handleSortFieldChange}
             sortDirection={sortDirection}
             onSortDirectionChange={handleSortDirectionChange}
+            direction="right"
           />
         </div>
 

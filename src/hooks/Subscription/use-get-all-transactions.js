@@ -43,6 +43,8 @@ export const getAllTransactions = async ({
   limit = 10,
   search = "",
   status = "",
+  startDate = "",
+  endDate = "",
 } = {}) => {
   let result;
   if (USE_MOCK) {
@@ -51,8 +53,14 @@ export const getAllTransactions = async ({
   } else {
     const searchParam = search ? `&search=${encodeURIComponent(search)}` : "";
     const statusParam = status ? `&status=${encodeURIComponent(status)}` : "";
+    const startDateParam = startDate
+      ? `&startDate=${encodeURIComponent(startDate)}`
+      : "";
+    const endDateParam = endDate
+      ? `&endDate=${encodeURIComponent(endDate)}`
+      : "";
     result = await fetcherTM.get(
-      `/v1/tm/buyer_subscription/all-transactions?type=${type}&page=${page}&limit=${limit}${searchParam}${statusParam}`
+      `/v1/tm/buyer_subscription/all-transactions?type=${type}&page=${page}&limit=${limit}${searchParam}${statusParam}${startDateParam}${endDateParam}`
     );
   }
   return result.data;
@@ -64,14 +72,25 @@ export const useGetAllTransactions = ({
   limit = 10,
   search = "",
   status = "",
+  startDate = "",
+  endDate = "",
 } = {}) => {
   const accessToken = useTokenStore((state) => state.accessToken);
 
   return useSWR(
     accessToken
-      ? `get-all-transactions?type=${type}&page=${page}&limit=${limit}&search=${search}&status=${status}`
+      ? `get-all-transactions?type=${type}&page=${page}&limit=${limit}&search=${search}&status=${status}&startDate=${startDate}&endDate=${endDate}`
       : null,
-    () => getAllTransactions({ type, page, limit, search, status }),
+    () =>
+      getAllTransactions({
+        type,
+        page,
+        limit,
+        search,
+        status,
+        startDate,
+        endDate,
+      }),
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,

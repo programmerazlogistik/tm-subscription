@@ -4,12 +4,15 @@ import { useState } from "react";
 
 import { IconComponent } from "@muatmuat/ui/IconComponent";
 
+import { cn } from "@/lib/utils";
+
 const SortComponent = ({
   options = [],
   sortField = "",
   onSortFieldChange,
   sortDirection = "DESC",
   onSortDirectionChange,
+  direction = "left",
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -27,8 +30,8 @@ const SortComponent = ({
       <div className="relative">
         <button
           className={`flex h-8 items-center gap-2 rounded-md border bg-white px-4 text-sm font-semibold ${
-            sortField
-              ? "border-[#176CF7] text-[#1B69F7]"
+            sortField || isDropdownOpen
+              ? "border-[#176CF7]"
               : "border-neutral-400 text-neutral-900"
           }`}
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -54,7 +57,11 @@ const SortComponent = ({
           </svg>
         </button>
         {isDropdownOpen && (
-          <div className="absolute left-0 top-full z-10 mt-1 min-w-[200px] rounded-lg border border-neutral-200 bg-white py-2 shadow-lg">
+          <div
+            className={cn(
+              `absolute ${direction === "left" ? "left-0" : "right-0"} top-full z-10 mt-1 min-w-[200px] rounded-lg border border-neutral-200 bg-white py-2 shadow-lg`
+            )}
+          >
             {options.map((option) => (
               <button
                 key={option.value}

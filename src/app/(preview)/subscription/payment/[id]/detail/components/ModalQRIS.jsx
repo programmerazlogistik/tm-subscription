@@ -38,8 +38,6 @@ export const ModalQRIS = ({ children, totalPrice, qrData }) => {
       <ModalTrigger>{children}</ModalTrigger>
       <ModalContent
         className="w-[328px] overflow-hidden md:w-[400px]"
-        appearance={{}}
-        type=""
         withCloseButton={true}
       >
         {/* Custom Blue Header */}

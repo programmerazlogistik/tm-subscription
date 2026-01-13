@@ -247,8 +247,8 @@ export const ModalHeader = ({ className, variant = "muattrans" }) => {
           <ImageComponent
             alt="logo muatmuat header coklat"
             src={centerSrc}
-            width={120}
-            height={40}
+            width={48}
+            height={48}
             className="h-full w-full"
           />
         )}

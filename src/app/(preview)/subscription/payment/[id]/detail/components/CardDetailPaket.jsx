@@ -108,35 +108,36 @@ const CardDetailPaket = ({ data }) => {
       </div>
 
       {/* Ringkasan Pembayaran */}
-      <div className="-mt-2 flex flex-col gap-5 border-b border-[#C4C4C4] pb-5">
-        <h3 className="text-[16px] font-medium text-[#000000]">
-          Ringkasan Pembayaran
-        </h3>
-        <div className="flex items-center justify-between text-[14px] font-medium text-[#7B7B7B]">
-          <span>Tanggal Pembayaran</span>
-          <span className="text-[16px] font-semibold text-[#000000]">
-            {tanggal}
-          </span>
-        </div>
-        {paymentMethodName && (
+      {data.status !== "pending" ? (
+        <div className="-mt-2 flex flex-col gap-5 border-b border-[#C4C4C4] pb-5">
+          <h3 className="text-[16px] font-medium text-[#000000]">
+            Ringkasan Pembayaran
+          </h3>
           <div className="flex items-center justify-between text-[14px] font-medium text-[#7B7B7B]">
-            <span>Metode Pembayaran</span>
-            <span className="flex items-center gap-1 text-[16px] font-semibold text-[#000000]">
-              {paymentMethodIcon && (
-                <Image
-                  src={paymentMethodIcon}
-                  alt={paymentMethodName}
-                  width={20}
-                  height={20}
-                  className="object-contain"
-                />
-              )}
-              {paymentMethodName}
+            <span>Tanggal Pembayaran</span>
+            <span className="text-[16px] font-semibold text-[#000000]">
+              {tanggal}
             </span>
           </div>
-        )}
-      </div>
-
+          {paymentMethodName && (
+            <div className="flex items-center justify-between text-[14px] font-medium text-[#7B7B7B]">
+              <span>Metode Pembayaran</span>
+              <span className="flex items-center gap-1 text-[16px] font-semibold text-[#000000]">
+                {paymentMethodIcon && (
+                  <Image
+                    src={paymentMethodIcon}
+                    alt={paymentMethodName}
+                    width={20}
+                    height={20}
+                    className="object-contain"
+                  />
+                )}
+                {paymentMethodName}
+              </span>
+            </div>
+          )}
+        </div>
+      ) : null}
       {/* Detail Pembayaran */}
       <div className="flex flex-col gap-5">
         <h3 className="text-[16px] font-medium text-[#000000]">

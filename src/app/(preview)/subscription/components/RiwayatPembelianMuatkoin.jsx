@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { format, subDays } from "date-fns";
+
 import Button from "@/components/Button/Button";
 import CheckboxCustom from "@/components/CheckboxCustom/CheckboxCustom";
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
@@ -84,9 +86,10 @@ const statusMap = {
 };
 
 const PERIOD_OPTIONS = [
-  { name: "Semua Periode", value: "all" },
-  { name: "7 Hari Terakhir", value: "7_days" },
+  { name: "Semua Periode (Default)", value: "all" },
+  { name: "Hari Ini", value: "today" },
   { name: "30 Hari Terakhir", value: "30_days" },
+  { name: "90 Hari Terakhir", value: "90_days" },
 ];
 
 const RiwayatPembelianMuatkoin = () => {
@@ -97,10 +100,27 @@ const RiwayatPembelianMuatkoin = () => {
   const [selectedFilters, setSelectedFilters] = useState([]);
   const [tempFilters, setTempFilters] = useState([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [selectedPeriod, setSelectedPeriod] = useState(PERIOD_OPTIONS[0]);
 
   // Build status filter param
   const statusParam =
     selectedFilters.length > 0 ? selectedFilters.join(",") : "";
+
+  // Calculate dates based on period presets
+  let startDateParam = selectedPeriod?.iso_start_date || "";
+  let endDateParam = selectedPeriod?.iso_end_date || "";
+
+  if (!selectedPeriod?.range && selectedPeriod?.value !== "all") {
+    const today = new Date();
+    endDateParam = format(today, "yyyy-MM-dd");
+    if (selectedPeriod?.value === "today") {
+      startDateParam = format(today, "yyyy-MM-dd");
+    } else if (selectedPeriod?.value === "30_days") {
+      startDateParam = format(subDays(today, 30), "yyyy-MM-dd");
+    } else if (selectedPeriod?.value === "90_days") {
+      startDateParam = format(subDays(today, 90), "yyyy-MM-dd");
+    }
+  }
 
   // Fetch transactions
   const { data: apiResponse, isLoading } = useGetAllTransactions({
@@ -109,6 +129,8 @@ const RiwayatPembelianMuatkoin = () => {
     limit: perPage,
     search: searchValue,
     status: statusParam,
+    startDate: startDateParam,
+    endDate: endDateParam,
   });
 
   const transactions = apiResponse?.Data?.transactions ?? [];
@@ -150,11 +172,12 @@ const RiwayatPembelianMuatkoin = () => {
 
   // Check if any filters are applied
   const hasFiltersApplied =
-    searchValue.length > 0 || selectedFilters.length > 0;
+    searchValue.length > 0 ||
+    selectedFilters.length > 0 ||
+    selectedPeriod?.value !== "all";
 
-  // Determine if we should show controls (data exists OR filters are applied)
-  const showControls =
-    !isLoading && (transactions.length > 0 || hasFiltersApplied);
+  // Determine if we should show controls (always show when not loading to allow users to change filters/period)
+  const showControls = !isLoading;
 
   return (
     <div className="relative flex flex-col gap-6">
@@ -163,7 +186,11 @@ const RiwayatPembelianMuatkoin = () => {
         <div className="absolute -top-16 right-0">
           <DropdownPeriode
             options={PERIOD_OPTIONS}
-            onSelect={(val) => console.log("Selected period:", val)}
+            onSelect={(val) => {
+              setSelectedPeriod(val);
+              setCurrentPage(1);
+            }}
+            value={selectedPeriod}
             width="w-[180px]"
           />
         </div>
@@ -280,14 +307,17 @@ const RiwayatPembelianMuatkoin = () => {
 
       {/* Table */}
       {!isLoading && transactions.length === 0 ? (
-        <DataEmpty
-          title={
-            hasFiltersApplied
-              ? "Tidak ada data"
-              : "Belum Ada Riwayat Pembelian muatkoin"
-          }
-          titleClassname="text-sm font-semibold text-neutral-500 mt-4"
-        />
+        <div className="!h-[20vh] w-full">
+          <DataEmpty
+            title={
+              hasFiltersApplied
+                ? "Tidak ada data"
+                : "Belum Ada Riwayat Pembelian muatkoin"
+            }
+            titleClassname="text-sm font-semibold text-neutral-500 mt-4"
+            className={"h-full"}
+          />
+        </div>
       ) : (
         <div className="w-full overflow-hidden rounded-lg border border-neutral-400">
           <table className="w-full text-left text-sm text-neutral-800">
