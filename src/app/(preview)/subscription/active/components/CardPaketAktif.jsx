@@ -7,6 +7,7 @@ import Button from "@/components/Button/Button";
 
 import { formatDateWIB } from "@/lib/format-date";
 import { printInvoice } from "@/lib/print-invoice";
+import { formatMuatkoin } from "@/lib/utils/formatters";
 
 const CardPaketAktif = ({ data }) => {
   const router = useRouter();
@@ -100,7 +101,7 @@ const CardPaketAktif = ({ data }) => {
             <span className="text-sm font-medium text-neutral-900">
               {isUnlimited
                 ? "Unlimited muatkoin"
-                : `${remainingMuatkoin}/${totalMuatkoin} muatkoin`}
+                : `${formatMuatkoin(remainingMuatkoin)}/${formatMuatkoin(totalMuatkoin)} muatkoin`}
             </span>
           </div>
 

@@ -7,7 +7,7 @@ import LoadingStatic from "@/components/Loading/LoadingStatic";
 import { TranslationProvider } from "@/hooks/use-translation";
 
 export function Providers({ children }) {
-  console.log("FE Version: 1.0.7");
+  console.log("FE Version: 1.0.8");
 
   return (
     <Suspense fallback={<LoadingStatic />}>

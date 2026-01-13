@@ -15,21 +15,25 @@ export const MOCK_DATA = {
     Text: "OK",
   },
   Data: {
-    id: "1e45854b-c0e6-4d92-b079-48ec60b46723",
-    name: "Starter",
-    description:
-      "Paket ideal untuk kebutuhan dasar dan mencoba semua fitur dengan kredit terbatas, masa aktif 30 hari.",
-    muatkoin: 30,
-    bonusMuatkoin: null,
+    id: "faa1f194-814d-4c43-a963-31d93b979f65",
+    name: "Paket Premium",
+    description: "Premium",
+    muatkoin: 123,
+    bonusMuatkoin: 0,
     isUnlimited: false,
-    isRecommended: false,
-    price: 50000,
-    originalPrice: null,
+    isRecommended: true,
+    price: 103,
+    originalPrice: 123,
     period: 30,
-    subUsersIncluded: 0,
-    promo: null,
+    subUsersIncluded: 123,
+    promo: {
+      id: "3ee1bd24-8ef3-4f91-8065-6f62f7aca166",
+      name: "Promo Paket Premium",
+      discount: 20,
+      bonusMuatkoin: 0,
+    },
   },
-  Type: "/v1/tm/buyer_subscription/purchase/packages/1e45854b-c0e6-4d92-b079-48ec60b46723",
+  Type: "/v1/tm/buyer_subscription/purchase/packages/faa1f194-814d-4c43-a963-31d93b979f65",
 };
 
 // Fetcher function

@@ -3,7 +3,7 @@ import Image from "next/image";
 const TestimonialCard = ({ name, role, company, text, date, rating = 5 }) => {
   return (
     <div
-      className="drop-shadow-testimonial relative flex flex-col items-start rounded-lg p-4"
+      className="relative flex flex-col items-start rounded-lg p-4 drop-shadow-testimonial"
       style={{
         width: "392px",
         height: "229px",
@@ -67,7 +67,7 @@ const TestimonialCard = ({ name, role, company, text, date, rating = 5 }) => {
             </div>
           </div>
 
-          <p className="h-[106px] w-[360px] text-left text-base font-medium leading-[120%] text-neutral-900">
+          <p className="line-clamp-6 w-[360px] text-left text-base font-medium leading-[120%] text-neutral-900">
             {text}
           </p>
         </div>

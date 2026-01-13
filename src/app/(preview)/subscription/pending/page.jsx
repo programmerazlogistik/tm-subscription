@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 
 import { InputSearch } from "@/components/InputSearch/InputSearch";
@@ -12,13 +11,17 @@ import { useGetPurchaseHistory } from "@/hooks/Payment/use-get-purchase-history"
 import { useDebounce } from "@/hooks/use-debounce";
 
 import SaldoMuatkoin from "../components/SaldoMuatkoin";
+import SortComponent from "../components/SortComponent";
 import CardPaketPending from "./components/CardPaketPending";
+
+const SORT_OPTIONS = [{ value: "transactionTime", label: "Waktu Transaksi" }];
 
 const PendingSubscriptionPage = () => {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [sort, setSort] = useState("DESC");
+  const [sortDirection, setSortDirection] = useState("DESC");
+  const [sortField, setSortField] = useState("");
 
   // Debounce search value
   const debouncedSearch = useDebounce(search, 500);
@@ -29,7 +32,7 @@ const PendingSubscriptionPage = () => {
     page: currentPage,
     limit: perPage,
     search: debouncedSearch,
-    sort: sort,
+    sort: sortDirection,
   });
 
   const packages = apiResponse?.Data?.purchaseHistory ?? [];
@@ -40,14 +43,19 @@ const PendingSubscriptionPage = () => {
     limit: 10,
   };
 
-  const toggleSort = () => {
-    setSort((prev) => (prev === "DESC" ? "ASC" : "DESC"));
+  const handleSortFieldChange = (field) => {
+    setSortField(field);
+    setCurrentPage(1);
+  };
+
+  const handleSortDirectionChange = (direction) => {
+    setSortDirection(direction);
     setCurrentPage(1);
   };
 
   return (
     <div className="min-h-screen bg-white p-6">
-      <div className="mx-auto flex max-w-5xl flex-col gap-6">
+      <div className="mx-auto flex w-[944px] flex-col gap-6">
         {/* Banner Saldo */}
         <SaldoMuatkoin balance={80} maxBalance={120} variant="rectangle" />
 
@@ -73,34 +81,13 @@ const PendingSubscriptionPage = () => {
             />
           </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              className="flex h-8 items-center gap-2 rounded-md border border-neutral-400 bg-white px-4 text-sm font-semibold text-neutral-900"
-              onClick={toggleSort}
-            >
-              <Image
-                src="/svg/sorting-icon.svg"
-                alt="sort"
-                width={16}
-                height={16}
-              />
-              Urutkan
-              <Image
-                src="/svg/chevron-down.svg"
-                alt="chevron"
-                width={16}
-                height={16}
-              />
-            </button>
-            <button
-              className="flex h-8 items-center justify-center rounded-md border border-neutral-400 bg-white px-3"
-              onClick={toggleSort}
-            >
-              <span className="text-sm font-bold">
-                {sort === "ASC" ? "A-Z" : "Z-A"}
-              </span>
-            </button>
-          </div>
+          <SortComponent
+            options={SORT_OPTIONS}
+            sortField={sortField}
+            onSortFieldChange={handleSortFieldChange}
+            sortDirection={sortDirection}
+            onSortDirectionChange={handleSortDirectionChange}
+          />
         </div>
 
         {/* List */}

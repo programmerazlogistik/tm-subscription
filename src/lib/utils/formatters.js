@@ -18,6 +18,19 @@ export const thousandSeparator = (num, opts) =>
     ...opts,
   }).format(num || 0);
 
+/**
+ * Format muatkoin value with thousand separator (Indonesian format)
+ * Example: 10212 -> "10.212"
+ * @param {number} value - The muatkoin value to format
+ * @returns {string} Formatted muatkoin value with thousand separators
+ */
+export const formatMuatkoin = (value) => {
+  if (value === null || value === undefined) return "0";
+  return new Intl.NumberFormat("id-ID", {
+    maximumFractionDigits: 0,
+  }).format(value);
+};
+
 export const formatNumberWithComma = (value) => {
   if (value === null || value === undefined) return "";
 

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Button from "@/components/Button/Button";
 
 import { formatDateWIB } from "@/lib/format-date";
+import { formatMuatkoin } from "@/lib/utils/formatters";
 
 const CardPaketPending = ({ data }) => {
   const router = useRouter();
@@ -43,8 +44,8 @@ const CardPaketPending = ({ data }) => {
   const muatkoinDisplay = isUnlimited
     ? "Unlimited muatkoin"
     : bonusMuatkoin > 0
-      ? `${baseMuatkoin} + ${bonusMuatkoin} Free muatkoin`
-      : `${baseMuatkoin} muatkoin`;
+      ? `${formatMuatkoin(baseMuatkoin)} + ${formatMuatkoin(bonusMuatkoin)} Free muatkoin`
+      : `${formatMuatkoin(baseMuatkoin)} muatkoin`;
 
   // Calculate final price after discount
   const originalPrice = packageDetail?.price || price;

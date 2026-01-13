@@ -92,11 +92,11 @@ const PaketMenungguPembayaran = () => {
         <div className="flex w-[122px] flex-col gap-2">
           <div className="flex items-center gap-2">
             <Image
-              src="/svg/muatkoin/m.svg"
+              src="/svg/daftar-paket/total-muatkoin.svg"
               alt="Muatkoin"
               width={16}
               height={16}
-              className="h-4 w-4 shrink-0 opacity-60 grayscale"
+              className="h-4 w-4 shrink-0"
             />
             <div className="flex flex-col">
               <span className="text-[12px] font-medium leading-[120%] text-[#676767]">
@@ -112,11 +112,13 @@ const PaketMenungguPembayaran = () => {
         {/* Harga */}
         <div className="flex w-[122px] flex-col gap-2">
           <div className="flex items-center gap-2">
-            <div className="flex h-4 w-4 shrink-0 items-center justify-center">
-              <div className="relative flex h-[10px] w-[14px] items-center justify-center rounded-[2px] border-[1.5px] border-[#676767]">
-                <div className="h-[4px] w-[4px] rounded-full border-[1.5px] border-[#676767]"></div>
-              </div>
-            </div>
+            <Image
+              src="/svg/daftar-paket/harga.svg"
+              alt="Harga"
+              width={16}
+              height={16}
+              className="h-4 w-4 shrink-0"
+            />
             <div className="flex flex-col">
               <span className="text-[12px] font-medium leading-[120%] text-[#676767]">
                 Harga
@@ -131,12 +133,13 @@ const PaketMenungguPembayaran = () => {
         {/* Metode Pembayaran */}
         <div className="mt-0 flex w-full flex-col gap-2">
           <div className="flex items-center gap-2">
-            <div className="flex h-4 w-4 shrink-0 items-center justify-center">
-              <div className="relative flex h-[14px] w-[14px] items-center justify-center rounded-[2px] border-[1.5px] border-[#676767]">
-                <div className="absolute top-[4px] h-[1.5px] w-full bg-[#676767]"></div>
-                <div className="absolute bottom-[3px] h-[1.5px] w-[6px] bg-[#676767]"></div>
-              </div>
-            </div>
+            <Image
+              src="/svg/daftar-paket/metode-pembayaran.svg"
+              alt="Metode Pembayaran"
+              width={16}
+              height={16}
+              className="h-4 w-4 shrink-0"
+            />
             <div className="flex flex-col">
               <span className="text-[12px] font-medium leading-[120%] text-[#676767]">
                 Metode Pembayaran

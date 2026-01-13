@@ -22,16 +22,6 @@ import { formatDateWIB } from "@/lib/format-date";
 import PricingCard from "./components/PricingCard";
 import TestimonialCard from "./components/TestimonialCard";
 
-// Helper function to format price to IDR
-const formatPrice = (price) => {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(price);
-};
-
 const BuyPage = () => {
   const router = useRouter();
   const { data } = useGetAvailablePackages();
@@ -61,31 +51,14 @@ const BuyPage = () => {
     }));
   }, [testimonialResponse]);
 
-  // Transform API data to PricingCard props
-  const pricingData = useMemo(() => {
-    const packages = data?.Data?.packages ?? [];
-    return packages.map((pkg) => ({
-      id: pkg.id,
-      title: pkg.name,
-      description: pkg.description,
-      muatkoinAmount: pkg.isUnlimited ? "Unlimited" : String(pkg.muatkoin),
-      price: formatPrice(pkg.price),
-      discountPrice: pkg.originalPrice ? formatPrice(pkg.originalPrice) : null,
-      bonus: pkg.bonusMuatkoin ? `+${pkg.bonusMuatkoin} Free` : null,
-      subUser:
-        pkg.subUsersIncluded > 0
-          ? `Termasuk ${pkg.subUsersIncluded} Sub User`
-          : null,
-      masaAktif: pkg.periodLabel,
-      isRecommended: pkg.isRecommended,
-      isBestValue: pkg.isPopular,
-      canPurchase: pkg.canPurchase,
-    }));
+  // Get packages from API
+  const packages = useMemo(() => {
+    return data?.Data?.packages ?? [];
   }, [data]);
 
-  const handleBuy = (plan) => {
-    // Navigate to payment page with plan id
-    router.push(`/subscription/payment?packageId=${plan.id}`);
+  const handleBuy = (pkg) => {
+    // Navigate to payment page with package id
+    router.push(`/subscription/payment?packageId=${pkg.id}`);
   };
 
   return (
@@ -112,20 +85,20 @@ const BuyPage = () => {
             items={useMemo(() => {
               const chunkSize = 3;
               const chunks = [];
-              for (let i = 0; i < pricingData.length; i += chunkSize) {
-                chunks.push(pricingData.slice(i, i + chunkSize));
+              for (let i = 0; i < packages.length; i += chunkSize) {
+                chunks.push(packages.slice(i, i + chunkSize));
               }
               return chunks;
-            }, [pricingData])}
+            }, [packages])}
             className="relative"
           >
             <div className="px-[68px]">
               <Slider.Content effect="slide">
                 {(items) => (
                   <div className="mx-auto grid max-w-[807px] grid-cols-3 gap-6">
-                    {items.map((plan) => (
-                      <div key={plan.id} className="flex justify-center">
-                        <PricingCard {...plan} onBuy={() => handleBuy(plan)} />
+                    {items.map((pkg) => (
+                      <div key={pkg.id} className="flex justify-center">
+                        <PricingCard data={pkg} onBuy={() => handleBuy(pkg)} />
                       </div>
                     ))}
                   </div>
@@ -133,11 +106,13 @@ const BuyPage = () => {
               </Slider.Content>
             </div>
 
-            <Slider.DesktopNavigation
-              className="-mt-3 !w-full !max-w-none !justify-between !px-0"
-              prevButtonClassName="bg-white rounded-full p-2 shadow-md h-12 w-12 flex items-center justify-center border border-neutral-100 hover:bg-neutral-50"
-              nextButtonClassName="bg-white rounded-full p-2 shadow-md h-12 w-12 flex items-center justify-center border border-neutral-100 hover:bg-neutral-50"
-            />
+            {packages.length > 3 && (
+              <Slider.DesktopNavigation
+                className="-mt-3 !w-full !max-w-none !justify-between !px-0"
+                prevButtonClassName="bg-white rounded-full p-2 shadow-md h-12 w-12 flex items-center justify-center border border-neutral-100 hover:bg-neutral-50"
+                nextButtonClassName="bg-white rounded-full p-2 shadow-md h-12 w-12 flex items-center justify-center border border-neutral-100 hover:bg-neutral-50"
+              />
+            )}
           </Slider.Root>
         </div>
       </div>

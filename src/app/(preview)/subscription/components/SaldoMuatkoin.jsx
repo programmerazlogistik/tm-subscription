@@ -10,6 +10,7 @@ import Button from "@/components/Button/Button";
 import { useGetBalance } from "@/hooks/Subscription/use-get-balance";
 
 import { cn } from "@/lib/utils";
+import { formatMuatkoin } from "@/lib/utils/formatters";
 
 const SaldoMuatkoin = ({
   isUnlimited = false,
@@ -73,7 +74,7 @@ const SaldoMuatkoin = ({
               <div className="flex flex-col">
                 <div className="flex items-end gap-2">
                   <span className="text-[40px] font-bold leading-10 text-[#1B1B1B]">
-                    {currentBalance}
+                    {formatMuatkoin(currentBalance)}
                   </span>
                   <span className="mb-1 text-xl font-semibold text-[#1B1B1B]">
                     muatkoin
@@ -81,7 +82,7 @@ const SaldoMuatkoin = ({
                 </div>
                 {totalBalance > 0 && (
                   <span className="text-sm font-medium text-[#868686]">
-                    Dari {totalBalance} muatkoin
+                    Dari {formatMuatkoin(totalBalance)} muatkoin
                   </span>
                 )}
               </div>

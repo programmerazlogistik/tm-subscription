@@ -11,7 +11,9 @@ import { Calendar } from "lucide-react";
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import { Slider } from "@/components/Slider/Slider";
 
-import { useGetPurchaseHistory } from "@/hooks/Payment/use-get-purchase-history";
+import { useGetActivePackages } from "@/hooks/Subscription/use-get-active-packages";
+
+import { formatMuatkoin } from "@/lib/utils/formatters";
 
 // Helper function to format date
 const formatDate = (dateString) => {
@@ -25,30 +27,25 @@ const formatDate = (dateString) => {
 
 // Transform API data to card format
 const transformPackageData = (pkg) => ({
-  id: pkg.id,
+  id: pkg.purchaseId,
   name: `${pkg.packageName} (${pkg.packageDetail?.period || 30} Hari)`,
-  totalMuatkoin: pkg.isUnlimited
-    ? "Unlimited"
-    : pkg.bonusMuatkoin > 0
-      ? `${pkg.baseMuatkoin} + ${pkg.bonusMuatkoin} Free`
-      : String(pkg.baseMuatkoin),
+  totalMuatkoin: pkg.isUnlimited ? "Unlimited" : String(pkg.totalMuatkoin),
   isUnlimited: pkg.isUnlimited,
-  expiry: formatDate(pkg.expiresAt),
+  expiry: formatDate(pkg.expirationDate),
 });
 
 const PaketMuatkoinAktif = () => {
   const router = useRouter();
 
-  // Fetch paid purchase history
-  const { data: apiResponse, isLoading } = useGetPurchaseHistory({
-    status: "paid",
+  // Fetch active packages
+  const { data: apiResponse, isLoading } = useGetActivePackages({
     page: 1,
     limit: 100,
   });
 
   // Transform API data
   const activePackages = useMemo(() => {
-    const packages = apiResponse?.Data?.purchaseHistory ?? [];
+    const packages = apiResponse?.Data?.packages ?? [];
     return packages.map(transformPackageData);
   }, [apiResponse]);
 
@@ -105,12 +102,14 @@ const PaketMuatkoinAktif = () => {
             Ini adalah paket aktif yang anda miliki dalam periode ini.
           </InfoTooltip>
         </div>
-        <Link
-          href="/subscription/active"
-          className="text-[12px] font-semibold text-blue-600 hover:text-blue-700 hover:underline"
-        >
-          Lihat Semua Transaksi
-        </Link>
+        {hasPackages && (
+          <Link
+            href="/subscription/active"
+            className="text-[12px] font-semibold text-blue-600 hover:text-blue-700 hover:underline"
+          >
+            Lihat Semua Transaksi
+          </Link>
+        )}
       </div>
 
       <div className="relative mx-auto w-fit px-4 pb-6 pt-4">
@@ -152,7 +151,7 @@ const PaketMuatkoinAktif = () => {
                             <span className="h-2 text-[12px] font-medium leading-[120%] text-[#1B1B1B]">
                               {pkg.isUnlimited
                                 ? "Unlimited muatkoin"
-                                : `${pkg.totalMuatkoin} muatkoin`}
+                                : `${formatMuatkoin(pkg.totalMuatkoin)} muatkoin`}
                             </span>
                           </div>
                         </div>

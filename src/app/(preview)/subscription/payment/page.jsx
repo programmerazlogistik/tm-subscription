@@ -76,7 +76,7 @@ const PaymentPage = () => {
 
         <div className="flex gap-4">
           <div className="w-[590px]">
-            <PaketYangDipilih current={current} />
+            <PaketYangDipilih data={data?.Data} />
           </div>
 
           <div className="w-[338px]">

@@ -25,7 +25,9 @@ const Page = () => {
 
   // Save accessToken from query params on every load
   useEffect(() => {
-    const accessToken = searchParams.get("accessToken");
+    const accessToken = process.env.NEXT_PUBLIC_ACCESS_TOKEN
+      ? process.env.NEXT_PUBLIC_ACCESS_TOKEN
+      : searchParams.get("accessToken");
     if (accessToken) {
       setToken({ accessToken, refreshToken: "" });
     }
@@ -37,16 +39,13 @@ const Page = () => {
 
       <div className="flex flex-col gap-6 rounded-xl bg-white p-6 drop-shadow-muat">
         <div className="flex gap-6">
-          {/* Left Card: Saldo muatkoin */}
           <SaldoMuatkoin />
 
-          {/* Right Card: Paket muatkoin Aktif */}
           <div className="flex-1">
             <PaketMuatkoinAktif />
           </div>
         </div>
 
-        {/* Bottom Card: Paket Menunggu Pembayaran */}
         <PaketMenungguPembayaran />
       </div>
 
@@ -69,29 +68,6 @@ const Page = () => {
             >
               Riwayat Pembelian
             </TabsTriggerWithSeparator>
-
-            <div className="relative ml-auto">
-              <select className="h-[36px] min-w-[150px] appearance-none rounded-md border border-neutral-400 bg-white pl-3 pr-8 text-sm font-semibold text-neutral-800 outline-none hover:bg-neutral-50 focus:border-blue-500">
-                <option>Semua Periode</option>
-                <option>7 Hari Terakhir</option>
-                <option>30 Hari Terakhir</option>
-              </select>
-              <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-neutral-600">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="m6 9 6 6 6-6" />
-                </svg>
-              </div>
-            </div>
           </TabsList>
 
           <TabsContent
