@@ -5,6 +5,7 @@ import { useState } from "react";
 import Button from "@/components/Button/Button";
 import CheckboxCustom from "@/components/CheckboxCustom/CheckboxCustom";
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
+import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import { InputSearch } from "@/components/InputSearch/InputSearch";
 import Pagination from "@/components/Pagination/Pagination";
 import {
@@ -61,9 +62,9 @@ const getModuleBadgeStyle = (moduleType, isPositive) => {
     return "bg-[#D5FFC3] text-[#3ECD00]"; // Green for top up
   }
   switch (moduleType) {
-    case "transporter":
-      return "bg-[#E6F0FF] text-[#176CF7]"; // Blue
     case "shipper":
+      return "bg-[#E6F0FF] text-[#176CF7]"; // Blue
+    case "transporter":
       return "bg-[#FFF1A5] text-[#FF7A00]"; // Yellow/Orange
     case "purchase":
       return "bg-[#D5FFC3] text-[#3ECD00]"; // Green
@@ -71,6 +72,13 @@ const getModuleBadgeStyle = (moduleType, isPositive) => {
       return "bg-[#E6F0FF] text-[#176CF7]"; // Blue default
   }
 };
+
+const PERIOD_OPTIONS = [
+  { name: "Semua Periode (Default)", value: "all" },
+  { name: "Hari Ini", value: "today" },
+  { name: "30 Hari Terakhir", value: "30_days" },
+  { name: "90 Hari Terakhir", value: "90_days" },
+];
 
 const RiwayatPenggunaanMuatkoin = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -142,28 +150,11 @@ const RiwayatPenggunaanMuatkoin = () => {
       {/* Periode selector - absolutely positioned to align with tabs */}
       {showControls && (
         <div className="absolute -top-16 right-0">
-          <div className="relative">
-            <select className="h-[36px] min-w-[150px] appearance-none rounded-md border border-neutral-400 bg-white pl-3 pr-8 text-sm font-semibold text-neutral-800 outline-none hover:bg-neutral-50 focus:border-blue-500">
-              <option>Semua Periode</option>
-              <option>7 Hari Terakhir</option>
-              <option>30 Hari Terakhir</option>
-            </select>
-            <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-neutral-600">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="m6 9 6 6 6-6" />
-              </svg>
-            </div>
-          </div>
+          <DropdownPeriode
+            options={PERIOD_OPTIONS}
+            onSelect={(val) => console.log("Selected period:", val)}
+            width="w-[180px]"
+          />
         </div>
       )}
 

@@ -1,15 +1,14 @@
 import React from "react";
 
+import { Button } from "@muatmuat/ui/Button";
+import { IconComponent } from "@muatmuat/ui/IconComponent";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-
-import Button from "@/components/Button/Button";
-import IconComponent from "@/components/IconComponent/IconComponent";
-import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 
 import { formatDateInput } from "@/lib/utils/dateFormat";
 
 import Input from "../Form/Input";
+import { Modal, ModalContent, ModalHeader } from "./ModalPrimary";
 
 const ModalPilihPeriode = ({
   open,
@@ -19,7 +18,6 @@ const ModalPilihPeriode = ({
   validate,
   setValidate,
   onApply,
-  buttonVariant,
   t,
   formatToISODate,
 }) => {
@@ -109,12 +107,10 @@ const ModalPilihPeriode = ({
 
   return (
     <Modal open={open} onOpenChange={onOpenChange} closeOnOutsideClick>
-      <ModalContent type="muattrans" className="w-modal-small">
-        <ModalHeader size="small" />
+      <ModalContent className="w-modal-small">
+        <ModalHeader size="small" variant="primary" />
         <div className="flex flex-col items-center gap-6 px-4 py-7">
-          <h3 className="bold-base text-center">
-            {t("AppMuatpartsAnalisaProdukPilihPeriode")}
-          </h3>
+          <h3 className="bold-base text-center">{t("Pilih Periode")}</h3>
 
           <div className="flex flex-col gap-y-2">
             <div className="relative flex max-w-[306px] flex-wrap items-center gap-2">
@@ -132,7 +128,7 @@ const ModalPilihPeriode = ({
                     : "",
                 }}
                 className={"!w-[136px] max-w-none"}
-                placeholder={t("AppMuatpartsAnalisaProdukPeriodeAwal")}
+                placeholder={t("Periode Awal")}
                 icon={{
                   right: (
                     <IconComponent
@@ -164,7 +160,7 @@ const ModalPilihPeriode = ({
                 onChange={() => {}}
                 classInput={"w-full"}
                 className={"!w-[136px] max-w-none"}
-                placeholder={t("AppMuatpartsAnalisaProdukPeriodeAkhir")}
+                placeholder={t("Periode Akhir")}
                 icon={{
                   right: (
                     <IconComponent
@@ -202,11 +198,11 @@ const ModalPilihPeriode = ({
           </div>
 
           <Button
-            variant={buttonVariant}
-            className="!h-8 w-[112px]"
+            className="!h-8 w-[112px] !font-medium"
+            variant="muatparts-primary"
             onClick={handleApply}
           >
-            {t("AppMuatpartsAnalisaProdukTerapkan")}
+            {t("Terapkan")}
           </Button>
         </div>
       </ModalContent>

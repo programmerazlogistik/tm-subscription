@@ -1,16 +1,54 @@
+import Image from "next/image";
+
+import { formatDateWIB } from "@/lib/format-date";
+
 const CardDetailPaket = ({ data }) => {
   const {
-    idTransaksi = "INV/2024/0123456789",
-    tanggal = "23 Jul 2025 18:00 WIB",
-    paket = "Paket Starter",
-    subUser = "(Termasuk 1 Sub User)",
-    durasi = "30 Hari",
-    tambahan = "320 + 20 muatkoin",
-    subtotal = "Rp300.000",
-    discount = "-Rp50.000",
-    total = "Rp250.000",
-    paymentMethod = null, // Only for completed/some states if needed
+    transactionId: idTransaksi = "-",
+    transactionDate,
+    packageName: paket = "-",
+    packageDetail = {},
+    price = 0,
+    paymentMethod: paymentMethodData,
+    additionalMuatkoin,
   } = data || {};
+
+  // Fallback if packageDetail is null (though data||{} handles undefined, explicit null might slip through if data.packageDetail is null)
+  const { subUsersIncluded, period, promo = {} } = packageDetail || {};
+
+  const discountAmount = promo?.discount || 0;
+  // Calculate subtotal from price if price is total, or from originalPrice
+  // Based on logical display: Subtotal is usually Price before discount.
+  // API: price = 200000, originalPrice = 359999.
+  // Display Subtotal: originalPrice (or price + discount)
+  // Display Total: price
+
+  const originalPrice = data?.originalPrice || price + discountAmount;
+
+  const formatPrice = (p) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(p || 0);
+  };
+
+  const tanggal = formatDateWIB(transactionDate);
+  const subUser = subUsersIncluded
+    ? `(Termasuk ${subUsersIncluded} Sub User)`
+    : "-";
+  const durasi = period ? `${period} Hari` : "-";
+  const tambahan = additionalMuatkoin || "-";
+
+  const subtotalDisplay = formatPrice(originalPrice);
+  const discountDisplay = discountAmount
+    ? `-${formatPrice(discountAmount)}`
+    : null;
+  const totalDisplay = formatPrice(price);
+
+  const paymentMethodName = paymentMethodData?.name;
+  const paymentMethodIcon = paymentMethodData?.icon;
 
   return (
     <div className="flex flex-col gap-8 rounded-xl bg-white px-8 py-5 shadow-muat">
@@ -80,17 +118,20 @@ const CardDetailPaket = ({ data }) => {
             {tanggal}
           </span>
         </div>
-        {paymentMethod && (
+        {paymentMethodName && (
           <div className="flex items-center justify-between text-[14px] font-medium text-[#7B7B7B]">
             <span>Metode Pembayaran</span>
             <span className="flex items-center gap-1 text-[16px] font-semibold text-[#000000]">
-              {/* Placeholder icon */}
-              <img
-                src="/svg/bca.svg"
-                alt="BCA"
-                className="h-5 w-5 object-contain"
-              />
-              {paymentMethod}
+              {paymentMethodIcon && (
+                <Image
+                  src={paymentMethodIcon}
+                  alt={paymentMethodName}
+                  width={20}
+                  height={20}
+                  className="object-contain"
+                />
+              )}
+              {paymentMethodName}
             </span>
           </div>
         )}
@@ -104,14 +145,14 @@ const CardDetailPaket = ({ data }) => {
         <div className="flex items-center justify-between text-[14px] font-medium text-[#7B7B7B]">
           <span>{paket}</span>
           <span className="text-[16px] font-semibold text-[#000000]">
-            {subtotal}
+            {subtotalDisplay}
           </span>
         </div>
-        {discount && (
+        {discountDisplay && (
           <div className="flex items-center justify-between text-[14px] font-medium text-[#7B7B7B]">
             <span>Potongan Harga</span>
             <span className="text-[16px] font-semibold text-[#EE4343]">
-              {discount}
+              {discountDisplay}
             </span>
           </div>
         )}
@@ -121,7 +162,7 @@ const CardDetailPaket = ({ data }) => {
         <div className="flex items-center justify-between text-[14px] font-medium text-[#7B7B7B]">
           <span>Total</span>
           <span className="text-[16px] font-semibold text-[#000000]">
-            {total}
+            {totalDisplay}
           </span>
         </div>
       </div>

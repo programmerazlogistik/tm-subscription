@@ -120,15 +120,29 @@ const CardPembayaranPaket = ({ data }) => {
   };
 
   const handlePrintInvoice = () => {
+    // Calculate values from data structure
+    const pkgDetail = data?.packageDetail || {};
+    const promo = pkgDetail.promo || {};
+
+    // Pricing
+    const originalPrice = data?.originalPrice || data?.price || 0;
+    const finalPrice = data?.price || 0;
+    const discountAmount = originalPrice - finalPrice;
+
+    // Muatkoin
+    const baseMuatkoin = pkgDetail.baseMuatkoin || 0;
+    const bonusMuatkoin = pkgDetail.bonusMuatkoin || promo.bonusMuatkoin || 0;
+    const totalMuatkoin = baseMuatkoin + bonusMuatkoin;
+
     printInvoice({
       transactionId: data?.transactionId || "-",
-      buyerName: data?.buyerName || "-",
+      buyerName: data?.buyerName || "-", // Note: buyerName seems missing in API response, keeping fallback
       topUpDate: data?.transactionDate,
       packageName: data?.packageName || "-",
-      totalMuatkoin: data?.totalMuatkoin || 0,
-      bonusMuatkoin: data?.bonusMuatkoin || 0,
-      price: data?.price || 0,
-      discount: data?.discount || 0,
+      totalMuatkoin: totalMuatkoin,
+      bonusMuatkoin: bonusMuatkoin,
+      price: originalPrice,
+      discount: discountAmount,
       paymentMethod: data?.paymentMethod?.name || paymentMethodName || "-",
     });
   };

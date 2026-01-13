@@ -6,6 +6,7 @@ import { useState } from "react";
 import Button from "@/components/Button/Button";
 import CheckboxCustom from "@/components/CheckboxCustom/CheckboxCustom";
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
+import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import { InputSearch } from "@/components/InputSearch/InputSearch";
 import Pagination from "@/components/Pagination/Pagination";
 import {
@@ -70,6 +71,22 @@ const getStatusLabel = (status) => {
 const filterOptions = [
   { key: "cancelled", label: "Dibatalkan" },
   { key: "expired", label: "Kedaluwarsa" },
+];
+
+// Map status to label and color
+const statusMap = {
+  pending: {
+    label: "Menunggu Pembayaran",
+    color: "text-[#F16209] bg-[#FFF2E0]",
+  },
+  success: { label: "Berhasil", color: "text-[#00AF6C] bg-[#E3F5ED]" },
+  failed: { label: "Gagal", color: "text-[#E93B3B] bg-[#FFEBEB]" },
+};
+
+const PERIOD_OPTIONS = [
+  { name: "Semua Periode", value: "all" },
+  { name: "7 Hari Terakhir", value: "7_days" },
+  { name: "30 Hari Terakhir", value: "30_days" },
 ];
 
 const RiwayatPembelianMuatkoin = () => {
@@ -144,28 +161,11 @@ const RiwayatPembelianMuatkoin = () => {
       {/* Periode selector - absolutely positioned to align with tabs */}
       {showControls && (
         <div className="absolute -top-16 right-0">
-          <div className="relative">
-            <select className="h-[36px] min-w-[150px] appearance-none rounded-md border border-neutral-400 bg-white pl-3 pr-8 text-sm font-semibold text-neutral-800 outline-none hover:bg-neutral-50 focus:border-blue-500">
-              <option>Semua Periode</option>
-              <option>7 Hari Terakhir</option>
-              <option>30 Hari Terakhir</option>
-            </select>
-            <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-neutral-600">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="m6 9 6 6 6-6" />
-              </svg>
-            </div>
-          </div>
+          <DropdownPeriode
+            options={PERIOD_OPTIONS}
+            onSelect={(val) => console.log("Selected period:", val)}
+            width="w-[180px]"
+          />
         </div>
       )}
 

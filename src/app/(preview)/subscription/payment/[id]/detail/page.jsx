@@ -7,7 +7,6 @@ import PageTitle from "@/components/PageTitle/PageTitle";
 
 import { useGetPurchaseDetail } from "@/hooks/Payment/use-get-purchase-detail";
 
-import { formatDateWIB } from "@/lib/format-date";
 import { printInvoice } from "@/lib/print-invoice";
 
 import CaraPembayaran from "./components/CaraPembayaran";
@@ -47,26 +46,6 @@ const DetailPembayaranPage = () => {
   else if (data?.status === "expired") uiStatus = "expired";
   else if (data?.status === "cancelled") uiStatus = "cancelled";
 
-  // Data for CardDetailPaket
-  const detailData = {
-    idTransaksi: data?.transactionId || "-",
-    tanggal: formatDateWIB(data?.transactionDate),
-    paket: data?.packageName || "-",
-    subUser: data?.packageDetail?.subUsersIncluded
-      ? `(Termasuk ${data.packageDetail.subUsersIncluded} Sub User)`
-      : "-",
-    durasi: data?.packageDetail?.period
-      ? `${data.packageDetail.period} Hari`
-      : "-",
-    tambahan: data?.additionalMuatkoin || "-",
-    subtotal: formatPrice(data?.price),
-    discount: data?.packageDetail?.promo?.discount
-      ? `-${formatPrice(data.packageDetail.promo.discount)}`
-      : null,
-    total: formatPrice(data?.price),
-    paymentMethod: data?.paymentMethod?.name || null,
-  };
-
   // Data for CardPembayaranPaket
   const paymentData = {
     purchaseId: data?.id,
@@ -76,18 +55,39 @@ const DetailPembayaranPage = () => {
     paymentChannel: data?.paymentMethod?.channel,
     vaNumber: data?.payment?.vaNumber || data?.vaNumber,
     totalPrice: data?.price,
+    packageDetail: data?.packageDetail,
+    originalPrice: data?.originalPrice,
+    transactionId: data?.transactionId,
+    transactionDate: data?.transactionDate,
+    buyerName: data?.buyerName,
+    packageName: data?.packageName,
+    discount: data?.packageDetail?.promo?.discount,
   };
 
   const handlePrintInvoice = () => {
+    // Calculate values from data structure for page-level print
+    const pkgDetail = data?.packageDetail || {};
+    const promo = pkgDetail.promo || {};
+
+    // Pricing
+    const originalPrice = data?.originalPrice || data?.price || 0;
+    const finalPrice = data?.price || 0;
+    const discountAmount = originalPrice - finalPrice;
+
+    // Muatkoin
+    const baseMuatkoin = pkgDetail.baseMuatkoin || 0;
+    const bonusMuatkoin = pkgDetail.bonusMuatkoin || promo.bonusMuatkoin || 0;
+    const totalMuatkoin = baseMuatkoin + bonusMuatkoin;
+
     printInvoice({
       transactionId: data?.transactionId || "-",
       buyerName: data?.buyerName || "-",
       topUpDate: data?.transactionDate,
       packageName: data?.packageName || "-",
-      totalMuatkoin: data?.totalMuatkoin || 0,
-      bonusMuatkoin: data?.bonusMuatkoin || 0,
-      price: data?.price || 0,
-      discount: data?.packageDetail?.promo?.discount || 0,
+      totalMuatkoin: totalMuatkoin,
+      bonusMuatkoin: bonusMuatkoin,
+      price: originalPrice,
+      discount: discountAmount,
       paymentMethod: data?.paymentMethod?.name || "-",
     });
   };
@@ -114,7 +114,7 @@ const DetailPembayaranPage = () => {
         return (
           <div className="flex flex-col gap-6">
             <CardStatusPaket status="active" />
-            <CardDetailPaket data={detailData} />
+            <CardDetailPaket data={data} />
           </div>
         );
       case "waiting":
@@ -124,16 +124,7 @@ const DetailPembayaranPage = () => {
             <div className="flex items-start gap-4">
               {/* Left Column: Transaction Details */}
               <div className="flex-1">
-                <CardDetailPaket
-                  data={{
-                    ...detailData,
-                    paymentMethod: null, // Hide specific payment method in detail card if waiting?
-                    // Wait, existing code had paymentMethod: null for waiting.
-                    // But CardDetailPaket shows it if present.
-                    // I will leave it as is (showing it is fine, or null as per mock).
-                    // Actually existing code obscured it. I'll pass it if available.
-                  }}
-                />
+                <CardDetailPaket data={data} />
               </div>
               {/* Right Column: Payment & Instructions */}
               <div className="flex w-[392px] flex-col gap-6">
@@ -147,14 +138,14 @@ const DetailPembayaranPage = () => {
         return (
           <div className="flex flex-col gap-6">
             <CardStatusPaket status="expired" />
-            <CardDetailPaket data={detailData} />
+            <CardDetailPaket data={data} />
           </div>
         );
       case "cancelled":
         return (
           <div className="flex flex-col gap-6">
             <CardStatusPaket status="cancelled" />
-            <CardDetailPaket data={detailData} />
+            <CardDetailPaket data={data} />
           </div>
         );
       default:

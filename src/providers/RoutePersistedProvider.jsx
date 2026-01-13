@@ -4,6 +4,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 const ROUTE_STORAGE_KEY = "tm-subscription-current-route";
+const RELOAD_FLAG_KEY = "tm-subscription-is-reload";
 
 export const RoutePersistedProvider = ({ children }) => {
   const pathname = usePathname();
@@ -12,15 +13,53 @@ export const RoutePersistedProvider = ({ children }) => {
   const hasRestored = useRef(false);
   const [isReady, setIsReady] = useState(false);
 
+  // Listen for postMessage from parent page
+  useEffect(() => {
+    const handleMessage = (event) => {
+      // Security: You can add origin check here if needed
+      // if (event.origin !== 'https://tm-az.assetlogistik.com') return;
+
+      if (event.data?.type === "PARENT_RELOAD") {
+        // Parent is reloading - mark that we should restore route
+        sessionStorage.setItem(RELOAD_FLAG_KEY, "true");
+      } else if (event.data?.type === "PARENT_FRESH_LOAD") {
+        // Parent is fresh load (not reload) - clear saved route
+        sessionStorage.removeItem(ROUTE_STORAGE_KEY);
+        sessionStorage.removeItem(RELOAD_FLAG_KEY);
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
   // Restore route on initial load
   useEffect(() => {
     if (hasRestored.current) return;
     hasRestored.current = true;
 
     const savedRoute = sessionStorage.getItem(ROUTE_STORAGE_KEY);
-    if (savedRoute && savedRoute !== pathname) {
+    const isReload = sessionStorage.getItem(RELOAD_FLAG_KEY) === "true";
+
+    // Clear the reload flag after reading
+    sessionStorage.removeItem(RELOAD_FLAG_KEY);
+
+    console.warn("[RoutePersistedProvider] Decision:", {
+      savedRoute,
+      currentPath: pathname,
+      isReload,
+    });
+
+    if (savedRoute && savedRoute !== pathname && isReload) {
+      console.warn("[RoutePersistedProvider] ✅ Restoring route:", savedRoute);
       router.replace(savedRoute);
     } else {
+      if (!isReload && savedRoute) {
+        console.warn(
+          "[RoutePersistedProvider] ❌ Fresh navigation - clearing saved route"
+        );
+        sessionStorage.removeItem(ROUTE_STORAGE_KEY);
+      }
       setIsReady(true);
     }
   }, [router, pathname]);

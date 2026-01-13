@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
+import { IconComponent } from "@muatmuat/ui/IconComponent";
 import { Plus } from "lucide-react";
 import "react-calendar/dist/Calendar.css";
-
-import IconComponent from "@/components/IconComponent/IconComponent";
 
 import { useTranslation } from "@/hooks/use-translation";
 
@@ -72,7 +71,6 @@ const DropdownPeriode = ({
   disable = false,
   value = null, // New prop to control the component externally
   width = "w-[202px]",
-  buttonVariant = "muattrans-primary",
 }) => {
   const { t } = useTranslation();
   const [selected, setSelected] = useState(
@@ -227,9 +225,7 @@ const DropdownPeriode = ({
           >
             <div className="flex w-full gap-2">
               <Plus width={15} height={15} className="text-primary-700" />
-              <span className="medium-xs">
-                {t("AppMuatpartsAnalisaProdukPilihPeriode")}
-              </span>
+              <span className="medium-xs">{t("Pilih Periode")}</span>
             </div>
           </li>
           {recentSelections.length > 0 && (
@@ -268,7 +264,6 @@ const DropdownPeriode = ({
         validate={validate}
         setValidate={setValidate}
         onApply={(opt) => handleSelect(opt, true)}
-        buttonVariant={buttonVariant}
         t={t}
         formatToISODate={formatToISODate}
       />

@@ -27,27 +27,32 @@ export const printInvoice = (invoiceData) => {
 
   const formatDate = (dateString) => {
     if (!dateString) return "-";
-    const formatted = new Date(dateString).toLocaleDateString("id-ID", {
-      timeZone: "Asia/Jakarta",
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
+    const formatted = new Date(dateString)
+      .toLocaleDateString("id-ID", {
+        timeZone: "Asia/Jakarta",
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      })
+      .replace(/\./g, ":");
     return `${formatted} WIB`;
   };
 
   const formatDownloadDate = () => {
-    const formatted = new Date().toLocaleDateString("id-ID", {
-      timeZone: "Asia/Jakarta",
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    const formatted = new Date()
+      .toLocaleDateString("id-ID", {
+        timeZone: "Asia/Jakarta",
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+      .replace(/\./g, ":");
     return `${formatted} WIB`;
   };
 
@@ -56,10 +61,13 @@ export const printInvoice = (invoiceData) => {
   const totalPesanan = price - discount;
   const totalTagihan = totalPesanan;
 
+  /* Only show if there are credits */
   const muatkoinDisplay =
-    bonusMuatkoin > 0
-      ? `${totalMuatkoin - bonusMuatkoin} Credit + Bonus ${bonusMuatkoin} Credit`
-      : `${totalMuatkoin} Credit`;
+    totalMuatkoin > 0
+      ? bonusMuatkoin > 0
+        ? `${totalMuatkoin - bonusMuatkoin} Credit + Bonus ${bonusMuatkoin} Credit`
+        : `${totalMuatkoin} Credit`
+      : "";
 
   const invoiceHTML = `
     <!DOCTYPE html>
@@ -86,44 +94,24 @@ export const printInvoice = (invoiceData) => {
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
-          border-bottom: 1px solid #e5e5e5;
-          padding-bottom: 16px;
+          align-items: flex-start;
+          /* border-bottom removed from header */
           margin-bottom: 8px;
         }
-        .logo-container {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          margin-bottom: 4px;
-        }
-        .logo-circle {
-          width: 24px;
-          height: 24px;
-          background: #FFB800;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-          font-weight: bold;
-          font-size: 12px;
-        }
-        .logo-text {
-          font-size: 18px;
-          font-weight: bold;
-          color: #1B69F7;
-        }
-        .logo-text .u {
-          color: #FFB800;
+        .logo-img {
+          height: 48px;
+          object-fit: contain;
         }
         .tagline {
           font-size: 9px;
           color: #1B69F7;
+          margin-top: 4px;
         }
         .invoice-label {
-          font-size: 9px;
+          font-size: 10px;
           color: #888;
           font-weight: 500;
+          letter-spacing: 1px;
         }
         .invoice-number {
           font-size: 14px;
@@ -136,6 +124,9 @@ export const printInvoice = (invoiceData) => {
           padding: 8px 0;
           font-size: 10px;
           color: #666;
+          border-bottom: 1px solid #e5e5e5; /* Added border here */
+          padding-bottom: 16px;
+          margin-bottom: 16px;
         }
         .section-title {
           font-size: 12px;
@@ -185,21 +176,26 @@ export const printInvoice = (invoiceData) => {
           position: relative;
           margin-top: 16px;
         }
+        /* Lunas watermark restored */
         .lunas-watermark {
           position: absolute;
           left: 50%;
           top: 50%;
           transform: translate(-50%, -50%) rotate(-15deg);
           border: 4px solid #4CAF50;
-          border-radius: 8px;
-          padding: 16px 32px;
-          opacity: 0.3;
+          border-radius: 12px;
+          padding: 12px 24px;
+          opacity: 0.2;
+          z-index: 0;
+          pointer-events: none;
+          max-width: 90%; /* Prevent overflow */
         }
         .lunas-text {
-          font-size: 28px;
-          font-weight: bold;
+          font-size: 32px;
+          font-weight: 800;
           letter-spacing: 4px;
           color: #4CAF50;
+          text-transform: uppercase;
         }
         .totals-wrapper {
           margin-left: auto;
@@ -230,7 +226,7 @@ export const printInvoice = (invoiceData) => {
         }
         .total-value-blue {
           font-weight: bold;
-          color: #1B69F7;
+          color: #333;
           font-size: 14px;
         }
         .total-value-red {
@@ -256,11 +252,12 @@ export const printInvoice = (invoiceData) => {
           text-decoration: none;
         }
         @media print {
-          body {
-            padding: 0;
-          }
           @page {
-            margin: 1cm;
+            margin: 0;
+            size: auto;
+          }
+          body {
+            margin: 1.6cm;
           }
         }
       </style>
@@ -269,11 +266,7 @@ export const printInvoice = (invoiceData) => {
       <!-- Header -->
       <div class="header">
         <div>
-          <div class="logo-container">
-            <div class="logo-circle">m</div>
-            <span class="logo-text">m<span class="u">u</span>atmuat</span>
-          </div>
-          <div class="tagline">Ekosistem Digital Logistik Terpercaya</div>
+          <img src="${window.location.origin}/img/logo-invoice.png" alt="muatmuat" class="logo-img" />
         </div>
         <div style="text-align: right;">
           <div class="invoice-label">INVOICE</div>
@@ -283,7 +276,7 @@ export const printInvoice = (invoiceData) => {
 
       <!-- Meta -->
       <div class="meta-row">
-        <div>Diunduh pada <strong>${formatDownloadDate()}</strong></div>
+        <div>Diunduh pada <strong style="color: #1B69F7;">${formatDownloadDate()}</strong></div>
         <div>Halaman 1 dari 1</div>
       </div>
 
@@ -319,10 +312,10 @@ export const printInvoice = (invoiceData) => {
 
       <!-- Totals -->
       <div class="totals-container">
-        <div class="lunas-watermark">
-          <div class="lunas-text">LUNAS</div>
-        </div>
         <div class="totals-wrapper">
+          <div class="lunas-watermark">
+            <div class="lunas-text">LUNAS</div>
+          </div>
           <div class="total-row">
             <span class="total-label">Total Harga</span>
             <span class="total-value">${formatPrice(totalHarga)}</span>
@@ -342,7 +335,7 @@ export const printInvoice = (invoiceData) => {
             <span class="total-value-bold">${formatPrice(totalPesanan)}</span>
           </div>
           <div class="total-row" style="border-bottom: none;">
-            <span class="total-label-blue">Total Tagihan</span>
+            <span class="total-label-bold">Total Tagihan</span>
             <span class="total-value-blue">${formatPrice(totalTagihan)}</span>
           </div>
           <div class="payment-row">
@@ -359,18 +352,36 @@ export const printInvoice = (invoiceData) => {
       </div>
 
       <script>
-        window.onload = function() {
-          window.print();
-        };
+        // Trigger print from parent when loaded
       </script>
     </body>
     </html>
   `;
 
-  // Open new window and print
-  const printWindow = window.open("", "_blank", "width=650,height=900");
-  if (printWindow) {
-    printWindow.document.write(invoiceHTML);
-    printWindow.document.close();
-  }
+  const iframe = document.createElement("iframe");
+  // Hide iframe but keep it part of DOM for rendering
+  iframe.style.position = "fixed";
+  iframe.style.left = "-9999px";
+  iframe.style.top = "0";
+  iframe.style.width = "0";
+  iframe.style.height = "0";
+  iframe.style.border = "none";
+  document.body.appendChild(iframe);
+
+  const iframeDoc = iframe.contentWindow.document;
+  iframeDoc.open();
+  iframeDoc.write(invoiceHTML);
+  iframeDoc.close();
+
+  iframe.onload = function () {
+    setTimeout(() => {
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+
+      // Remove iframe after printing (delayed)
+      setTimeout(() => {
+        document.body.removeChild(iframe);
+      }, 2000);
+    }, 500);
+  };
 };
