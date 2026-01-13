@@ -168,7 +168,8 @@ const CardPaketPending = ({ data }) => {
                   <span className="text-xs text-neutral-400 line-through">
                     {formatPrice(originalPrice)}
                   </span>
-                  <span className="rounded bg-[#E93B3B] px-1.5 py-0.5 text-[10px] font-semibold text-white">
+                  {/* 26.03 - LB - 0142 */}
+                  <span className="rounded bg-[#FDD1D1] px-1.5 py-0.5 text-[10px] font-semibold !text-[#F71717]">
                     {Math.round((discount / originalPrice) * 100)}% OFF
                   </span>
                 </div>

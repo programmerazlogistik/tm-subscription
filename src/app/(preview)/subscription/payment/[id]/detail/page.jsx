@@ -53,6 +53,7 @@ const DetailPembayaranPage = () => {
     paymentMethodName: data?.paymentMethod?.name,
     paymentMethodIcon: data?.paymentMethod?.icon,
     paymentChannel: data?.paymentMethod?.channel,
+    paymentCode: data?.paymentMethod?.code,
     vaNumber: data?.payment?.vaNumber || data?.vaNumber,
     totalPrice: data?.price,
     packageDetail: data?.packageDetail,
@@ -62,6 +63,7 @@ const DetailPembayaranPage = () => {
     buyerName: data?.buyerName,
     packageName: data?.packageName,
     discount: data?.packageDetail?.promo?.discount,
+    qrisData: data?.payment?.qrisData,
   };
 
   const handlePrintInvoice = () => {

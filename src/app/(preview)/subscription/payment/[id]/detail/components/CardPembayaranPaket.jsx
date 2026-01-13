@@ -13,6 +13,8 @@ import { useCancelPurchase } from "@/hooks/Payment/use-cancel-purchase";
 import { formatDateWIB } from "@/lib/format-date";
 import { printInvoice } from "@/lib/print-invoice";
 
+import { ModalQRIS } from "./ModalQRIS";
+
 const CardPembayaranPaket = ({ data }) => {
   const router = useRouter();
   const { cancelPurchase, isLoading: isCancelling } = useCancelPurchase();
@@ -152,8 +154,10 @@ const CardPembayaranPaket = ({ data }) => {
     paymentMethodName,
     paymentMethodIcon,
     paymentChannel,
+    paymentCode,
     vaNumber,
     totalPrice,
+    qrisData,
   } = data || {};
 
   return (
@@ -246,6 +250,13 @@ const CardPembayaranPaket = ({ data }) => {
       </div>
 
       <div className="flex flex-col gap-3">
+        {paymentCode === "qris" ? (
+          <ModalQRIS totalPrice={totalPrice} qrData={qrisData}>
+            <Button variant="muatparts-primary" className="w-full">
+              Lihat QR Code
+            </Button>
+          </ModalQRIS>
+        ) : null}
         <Button
           variant="muatparts-primary-secondary"
           className="w-full border-[#176CF7] text-[#176CF7]"
