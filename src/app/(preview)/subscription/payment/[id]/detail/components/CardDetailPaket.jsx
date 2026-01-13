@@ -97,7 +97,7 @@ const CardDetailPaket = ({ data }) => {
         </div>
 
         {/* Tambahan muatkoin */}
-        <div className="col-span-2 flex flex-col gap-3">
+        <div className="col-span-2 flex flex-col">
           <span className="text-[14px] font-medium text-[#7B7B7B]">
             Tambahan muatkoin
           </span>
@@ -139,7 +139,7 @@ const CardDetailPaket = ({ data }) => {
         </div>
       ) : null}
       {/* Detail Pembayaran */}
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-2">
         <h3 className="text-[16px] font-medium text-[#000000]">
           Detail Pembayaran
         </h3>
