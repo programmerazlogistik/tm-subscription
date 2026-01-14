@@ -28,7 +28,7 @@ import { formatDateWIB } from "@/lib/format-date";
 import { cn } from "@/lib/utils";
 import { formatMuatkoin } from "@/lib/utils/formatters";
 
-// Map usageType to Indonesian label
+// Map usageType to Indonesian label (fallback for table display)
 const usageTypeMap = {
   view_transporter_profile_pricelist: "Melihat Profil Transporter (Price List)",
   view_transporter_contact_pricelist: "Melihat Kontak Transporter (Price List)",
@@ -39,20 +39,6 @@ const usageTypeMap = {
   top_up: "Beli muatkoin",
   expiry: "muatkoin kedaluwarsa",
 };
-
-// Filter options for the drawer
-const filterOptions = [
-  { key: "top_up", label: "Top Up muatkoin" },
-  {
-    key: "view_transporter_contact_pricelist",
-    label: "Melihat No. Telp Transporter",
-  },
-  {
-    key: "view_transporter_profile_pricelist",
-    label: "Melihat Profil Transporter",
-  },
-  { key: "expiry", label: "muatkoin Kedaluwarsa" },
-];
 
 const parseUsageType = (type) => {
   return usageTypeMap[type] || type;
@@ -132,6 +118,11 @@ const RiwayatPenggunaanMuatkoin = () => {
     totalData: 0,
     limit: 10,
   };
+  // Filter options from API (already grouped by backend)
+  const filterOptions = (apiResponse?.Data?.usageOptions ?? []).map((opt) => ({
+    key: opt.value,
+    label: opt.name,
+  }));
 
   const handleFilterToggle = (filterKey) => {
     setTempFilters((prev) =>
@@ -164,8 +155,9 @@ const RiwayatPenggunaanMuatkoin = () => {
     selectedFilters.length > 0 ||
     selectedPeriod?.value !== "all";
 
-  // Determine if we should show controls (always show when not loading to allow users to change filters/period)
-  const showControls = !isLoading;
+  // Show controls when there's data OR filters are applied (even if result is 0)
+  const showControls =
+    !isLoading && (usageHistory.length > 0 || hasFiltersApplied);
 
   return (
     <div className="relative flex flex-col gap-6">
@@ -302,6 +294,7 @@ const RiwayatPenggunaanMuatkoin = () => {
               : "Belum Ada Riwayat Penggunaan muatkoin"
           }
           titleClassname="text-sm font-semibold text-neutral-500 mt-4"
+          className="mt-6"
         />
       ) : (
         <div className="w-full overflow-hidden rounded-lg border border-neutral-400">
@@ -373,14 +366,19 @@ const RiwayatPenggunaanMuatkoin = () => {
                         <span
                           className={cn(
                             "inline-flex h-[24px] w-[136px] items-center justify-center rounded-[6px] px-[8px] pb-[4px] pt-[6px] text-xs font-semibold",
-                            item.isPositive
+                            item.isPositive ||
+                              (item.muatkoinAmount === 0 &&
+                                item.usageType === "top_up")
                               ? "bg-[#D5FFC3] text-[#3ECD00]" // Green
                               : "bg-[#FFD7D7] text-[#E93B3B]" // Red
                           )}
                         >
-                          {item.isPositive
-                            ? `+${formatMuatkoin(item.muatkoinAmount)} muatkoin`
-                            : `${formatMuatkoin(item.muatkoinAmount)} muatkoin`}
+                          {item.muatkoinAmount === 0 &&
+                          item.usageType === "top_up"
+                            ? "+Unlimited muatkoin"
+                            : item.isPositive
+                              ? `+${formatMuatkoin(item.muatkoinAmount)} muatkoin`
+                              : `${formatMuatkoin(item.muatkoinAmount)} muatkoin`}
                         </span>
                       </td>
                     </tr>

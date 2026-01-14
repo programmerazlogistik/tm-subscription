@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
-import { useTokenActions } from "@muatmuat/lib/auth-adapter";
+import { useTokenActions, useUserActions } from "@muatmuat/lib/auth-adapter";
 
 import PageTitle from "@/components/PageTitle/PageTitle";
 import {
@@ -22,8 +22,9 @@ import SaldoMuatkoin from "./components/SaldoMuatkoin";
 const Page = () => {
   const searchParams = useSearchParams();
   const { setToken } = useTokenActions();
+  const { setUser } = useUserActions();
 
-  // Save accessToken from query params on every load
+  // Save accessToken and role from query params on every load
   useEffect(() => {
     const accessToken = process.env.NEXT_PUBLIC_ACCESS_TOKEN
       ? process.env.NEXT_PUBLIC_ACCESS_TOKEN
@@ -31,7 +32,15 @@ const Page = () => {
     if (accessToken) {
       setToken({ accessToken, refreshToken: "" });
     }
-  }, [searchParams, setToken]);
+
+    // Get and store role in dataUser: "2" = shipper, "4" = transporter
+    const roleMap = { shipper: "2", transporter: "4" };
+    const envRole = process.env.NEXT_PUBLIC_ROLE;
+    const role = envRole
+      ? roleMap[envRole] || envRole
+      : searchParams.get("role") || "2"; // Default to shipper
+    setUser({ role });
+  }, [searchParams, setToken, setUser]);
 
   return (
     <div className="font-primary flex w-full flex-col gap-6 p-8 text-neutral-900">

@@ -131,7 +131,7 @@ const PaketMuatkoinAktif = () => {
                       onClick={() => handleCardClick(pkg.id)}
                       className="flex h-[123px] w-[272px] shrink-0 cursor-pointer flex-col gap-3 rounded-xl border border-[#A8A8A8] bg-white p-3 transition-shadow hover:shadow-md"
                     >
-                      <div className="flex h-[11px] items-center text-[16px] font-semibold leading-[120%] text-[#1B1B1B]">
+                      <div className="flex max-h-[24px] items-center text-[16px] font-semibold leading-[120%] text-[#1B1B1B]">
                         {pkg.name}
                       </div>
 

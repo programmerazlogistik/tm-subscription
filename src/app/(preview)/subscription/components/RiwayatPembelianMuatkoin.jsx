@@ -69,11 +69,7 @@ const getStatusLabel = (status) => {
   }
 };
 
-// Filter options for the drawer
-const filterOptions = [
-  { key: "cancelled", label: "Dibatalkan" },
-  { key: "expired", label: "Kedaluwarsa" },
-];
+// Filter options will be fetched from API response
 
 // Map status to label and color
 const statusMap = {
@@ -139,6 +135,11 @@ const RiwayatPembelianMuatkoin = () => {
     totalData: 0,
     limit: 10,
   };
+  // Filter options from API
+  const filterOptions = (apiResponse?.Data?.statusOptions ?? []).map((opt) => ({
+    key: opt.value,
+    label: opt.name,
+  }));
 
   const handleDetail = (id) => {
     router.push(`/subscription/payment/${id}/detail`);
@@ -175,8 +176,9 @@ const RiwayatPembelianMuatkoin = () => {
     selectedFilters.length > 0 ||
     selectedPeriod?.value !== "all";
 
-  // Determine if we should show controls (always show when not loading to allow users to change filters/period)
-  const showControls = !isLoading;
+  // Show controls when there's data OR filters are applied (even if result is 0)
+  const showControls =
+    !isLoading && (transactions.length > 0 || hasFiltersApplied);
 
   return (
     <div className="relative flex flex-col gap-6">
@@ -314,7 +316,7 @@ const RiwayatPembelianMuatkoin = () => {
                 : "Belum Ada Riwayat Pembelian muatkoin"
             }
             titleClassname="text-sm font-semibold text-neutral-500 mt-4"
-            className={"h-full"}
+            className="mt-6"
           />
         </div>
       ) : (
