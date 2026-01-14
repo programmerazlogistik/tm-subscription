@@ -56,6 +56,26 @@ const BuyPage = () => {
     return data?.Data?.packages ?? [];
   }, [data]);
 
+  // Chunk packages for slider (3 per slide)
+  const packageChunks = useMemo(() => {
+    const chunkSize = 3;
+    const chunks = [];
+    for (let i = 0; i < packages.length; i += chunkSize) {
+      chunks.push(packages.slice(i, i + chunkSize));
+    }
+    return chunks;
+  }, [packages]);
+
+  // Chunk testimonials for slider (2 per slide)
+  const testimonialChunks = useMemo(() => {
+    const chunkSize = 2;
+    const chunks = [];
+    for (let i = 0; i < testimonialData.length; i += chunkSize) {
+      chunks.push(testimonialData.slice(i, i + chunkSize));
+    }
+    return chunks;
+  }, [testimonialData]);
+
   const handleBuy = (pkg) => {
     // Navigate to payment page with package id
     router.push(`/subscription/payment?packageId=${pkg.id}`);
@@ -81,17 +101,7 @@ const BuyPage = () => {
       {/* Pricing Section */}
       <div className="mb-16 bg-white">
         <div className="mx-auto max-w-6xl">
-          <Slider.Root
-            items={useMemo(() => {
-              const chunkSize = 3;
-              const chunks = [];
-              for (let i = 0; i < packages.length; i += chunkSize) {
-                chunks.push(packages.slice(i, i + chunkSize));
-              }
-              return chunks;
-            }, [packages])}
-            className="relative"
-          >
+          <Slider.Root items={packageChunks} className="relative">
             <div className="px-[68px]">
               <Slider.Content effect="slide">
                 {(items) => (
@@ -118,58 +128,50 @@ const BuyPage = () => {
       </div>
 
       {/* Testimonial Section */}
-      <div className="mb-16 bg-white">
-        <h2 className="mb-8 text-center text-2xl font-bold text-neutral-900">
-          Testimonial
-        </h2>
+      {testimonialData.length > 0 && (
+        <div className="mb-16 bg-white">
+          <h2 className="mb-8 text-center text-2xl font-bold text-neutral-900">
+            Testimonial
+          </h2>
 
-        <div className="mx-auto max-w-6xl">
-          <Slider.Root
-            items={useMemo(() => {
-              const chunkSize = 2;
-              const chunks = [];
-              for (let i = 0; i < testimonialData.length; i += chunkSize) {
-                chunks.push(testimonialData.slice(i, i + chunkSize));
-              }
-              return chunks;
-            }, [testimonialData])}
-            className="relative"
-          >
-            <div className="px-[68px]">
-              <Slider.Content effect="slide">
-                {(items) => (
-                  <div className="mx-auto grid max-w-[808px] grid-cols-1 gap-6 md:grid-cols-2">
-                    {items.map((item) => (
-                      <div key={item.id} className="flex justify-center">
-                        <TestimonialCard {...item} />
-                      </div>
-                    ))}
-                    {/* Handle odd number of items if needed: empty div or styling? 
+          <div className="mx-auto max-w-6xl">
+            <Slider.Root items={testimonialChunks} className="relative">
+              <div className="px-[68px]">
+                <Slider.Content effect="slide">
+                  {(items) => (
+                    <div className="mx-auto grid max-w-[808px] grid-cols-1 gap-6 md:grid-cols-2">
+                      {items.map((item) => (
+                        <div key={item.id} className="flex justify-center">
+                          <TestimonialCard {...item} />
+                        </div>
+                      ))}
+                      {/* Handle odd number of items if needed: empty div or styling? 
                         If only 1 item in chunk, grid-cols-2 will show it on left. 
                         Design implies even distribution or centered. 
                         For now, left aligned is fine for carousel.
                     */}
-                  </div>
-                )}
-              </Slider.Content>
-            </div>
+                    </div>
+                  )}
+                </Slider.Content>
+              </div>
 
-            <Slider.DesktopNavigation
-              className="-mt-3 !w-full !max-w-none !justify-between !px-0"
-              prevButtonClassName="bg-white rounded-full p-2 shadow-md h-12 w-12 flex items-center justify-center border border-neutral-100 hover:bg-neutral-50"
-              nextButtonClassName="bg-white rounded-full p-2 shadow-md h-12 w-12 flex items-center justify-center border border-neutral-100 hover:bg-neutral-50"
-            />
+              <Slider.DesktopNavigation
+                className="-mt-3 !w-full !max-w-none !justify-between !px-0"
+                prevButtonClassName="bg-white rounded-full p-2 shadow-md h-12 w-12 flex items-center justify-center border border-neutral-100 hover:bg-neutral-50"
+                nextButtonClassName="bg-white rounded-full p-2 shadow-md h-12 w-12 flex items-center justify-center border border-neutral-100 hover:bg-neutral-50"
+              />
 
-            <div className="mt-8 flex justify-center">
-              <Slider.Indicator />
-            </div>
-          </Slider.Root>
+              <div className="mt-8 flex justify-center">
+                <Slider.Indicator />
+              </div>
+            </Slider.Root>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* FAQ Section */}
       <div className="mx-auto mb-20 w-full max-w-[808px] px-6">
-        <h2 className="mb-8 text-center text-[32px] font-bold text-neutral-900">
+        <h2 className="mb-8 text-center text-2xl font-bold text-neutral-900">
           Paling Sering Ditanyakan
         </h2>
         <div className="flex flex-col rounded-[12px] border border-neutral-200 bg-white p-6 shadow-[0px_4px_16px_rgba(0,0,0,0.04)]">
