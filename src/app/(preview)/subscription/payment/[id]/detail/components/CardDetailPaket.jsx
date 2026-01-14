@@ -108,8 +108,8 @@ const CardDetailPaket = ({ data }) => {
       </div>
 
       {/* Ringkasan Pembayaran */}
-      {data.status !== "pending" ? (
-        <div className="-mt-2 flex flex-col gap-5 border-b border-[#C4C4C4] pb-5">
+      {data.status !== "pending" && data.price > 0 ? (
+        <div className="flex flex-col gap-5">
           <h3 className="text-[16px] font-medium text-[#000000]">
             Ringkasan Pembayaran
           </h3>
