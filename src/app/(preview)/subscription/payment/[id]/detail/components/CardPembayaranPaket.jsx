@@ -9,7 +9,10 @@ import { toast } from "@muatmuat/ui/Toaster";
 import Button from "@/components/Button/Button";
 
 import { useCancelPurchase } from "@/hooks/Payment/use-cancel-purchase";
-import { transformToPrintInvoiceData } from "@/hooks/Payment/use-get-purchase-detail";
+import {
+  getPurchaseDetail,
+  transformToPrintInvoiceData,
+} from "@/hooks/Payment/use-get-purchase-detail";
 
 import { formatDateWIB } from "@/lib/format-date";
 import { printInvoice } from "@/lib/print-invoice";
@@ -20,6 +23,7 @@ const CardPembayaranPaket = ({ data }) => {
   const router = useRouter();
   const { cancelPurchase, isLoading: isCancelling } = useCancelPurchase();
   const [timeRemaining, setTimeRemaining] = useState("--:--:--");
+  const [isPrinting, setIsPrinting] = useState(false);
 
   // Calculate and format time remaining
   useEffect(() => {
@@ -122,21 +126,16 @@ const CardPembayaranPaket = ({ data }) => {
     }
   };
 
-  const handlePrintInvoice = () => {
-    // Use transformToPrintInvoiceData as single source of truth
-    // Transform data props to match the expected format
-    const invoiceData = transformToPrintInvoiceData({
-      transactionId: data?.transactionId,
-      buyerName: data?.buyerName,
-      transactionDate: data?.transactionDate,
-      packageName: data?.packageName,
-      packageDetail: data?.packageDetail,
-      originalPrice: data?.originalPrice,
-      price: data?.totalPrice || data?.price,
-      paymentMethod: { name: data?.paymentMethodName },
-      status: data?.status,
-    });
-    printInvoice(invoiceData);
+  const handlePrintInvoice = async () => {
+    setIsPrinting(true);
+    try {
+      // Fetch fresh data on click
+      const response = await getPurchaseDetail(data?.purchaseId);
+      const invoiceData = transformToPrintInvoiceData(response?.Data);
+      printInvoice(invoiceData);
+    } finally {
+      setIsPrinting(false);
+    }
   };
 
   const {
@@ -250,10 +249,11 @@ const CardPembayaranPaket = ({ data }) => {
         <Button
           variant="muatparts-primary-secondary"
           className="w-full border-[#176CF7] text-[#176CF7]"
-          iconLeft="/svg/cetak.svg"
+          iconLeft={isPrinting ? null : "/svg/cetak.svg"}
           onClick={handlePrintInvoice}
+          disabled={isPrinting}
         >
-          Cetak Invoice
+          {isPrinting ? "Memuat..." : "Cetak Invoice"}
         </Button>
         <Button
           variant="muatparts-error-secondary"

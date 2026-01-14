@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import Button from "@/components/Button/Button";
 
 import {
+  getPurchaseDetail,
   transformToPrintInvoiceData,
-  useGetPurchaseDetail,
 } from "@/hooks/Payment/use-get-purchase-detail";
 
 import { formatDateWIB } from "@/lib/format-date";
@@ -16,6 +17,7 @@ import { formatMuatkoin } from "@/lib/utils/formatters";
 
 const CardPaketAktif = ({ data }) => {
   const router = useRouter();
+  const [isPrinting, setIsPrinting] = useState(false);
 
   const {
     purchaseId,
@@ -28,10 +30,6 @@ const CardPaketAktif = ({ data }) => {
     startDate,
     packageDetail,
   } = data;
-
-  // Fetch purchase detail for complete invoice data (includes buyerName)
-  const { data: purchaseDetailResponse } = useGetPurchaseDetail(purchaseId);
-  const purchaseDetail = purchaseDetailResponse?.Data;
 
   // Format price helper
   const formatPrice = (price) => {
@@ -48,11 +46,17 @@ const CardPaketAktif = ({ data }) => {
     router.push(`/subscription/payment/${purchaseId}/detail`);
   };
 
-  const handlePrintInvoice = () => {
-    // Use purchaseDetail from hook as single source of truth
-    const invoiceData = transformToPrintInvoiceData(purchaseDetail);
-    // Override status to "paid" since active packages are already paid
-    printInvoice({ ...invoiceData, status: "paid" });
+  const handlePrintInvoice = async () => {
+    setIsPrinting(true);
+    try {
+      // Fetch data on click instead of pre-fetching
+      const response = await getPurchaseDetail(purchaseId);
+      const invoiceData = transformToPrintInvoiceData(response?.Data);
+      // Override status to "paid" since active packages are already paid
+      printInvoice({ ...invoiceData, status: "paid" });
+    } finally {
+      setIsPrinting(false);
+    }
   };
 
   return (
@@ -174,8 +178,9 @@ const CardPaketAktif = ({ data }) => {
           variant="muatparts-primary-secondary"
           className="!h-[33px] !w-[136px] rounded-full border !px-0 text-sm font-semibold"
           onClick={handlePrintInvoice}
+          disabled={isPrinting}
         >
-          Cetak Invoice
+          {isPrinting ? "Memuat..." : "Cetak Invoice"}
         </Button>
         <Button
           variant="muatparts-primary"
