@@ -13,12 +13,13 @@ import { cn } from "@/lib/utils";
 import { formatMuatkoin } from "@/lib/utils/formatters";
 
 const SaldoMuatkoin = ({
-  isUnlimited = false,
   variant = "square", // "square" | "rectangle"
 }) => {
   const { data } = useGetBalance();
   const currentBalance = data?.Data?.currentBalance ?? 0;
   const totalBalance = data?.Data?.totalBalance ?? 0;
+  // isUnlimited comes from API - top priority display
+  const isUnlimited = data?.Data?.isUnlimited ?? false;
   const isRectangle = variant === "rectangle";
 
   return (
@@ -66,7 +67,7 @@ const SaldoMuatkoin = ({
                 <span className="text-[32px] font-bold leading-9 text-[#1B1B1B]">
                   Unlimited
                 </span>
-                <span className="text-xl font-semibold leading-9 text-[#1B1B1B]">
+                <span className="-mt-1.5 text-xl font-semibold leading-9 text-[#1B1B1B]">
                   muatkoin
                 </span>
               </div>

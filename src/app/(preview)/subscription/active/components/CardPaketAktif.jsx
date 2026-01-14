@@ -5,6 +5,11 @@ import { useRouter } from "next/navigation";
 
 import Button from "@/components/Button/Button";
 
+import {
+  transformToPrintInvoiceData,
+  useGetPurchaseDetail,
+} from "@/hooks/Payment/use-get-purchase-detail";
+
 import { formatDateWIB } from "@/lib/format-date";
 import { printInvoice } from "@/lib/print-invoice";
 import { formatMuatkoin } from "@/lib/utils/formatters";
@@ -24,9 +29,13 @@ const CardPaketAktif = ({ data }) => {
     packageDetail,
   } = data;
 
+  // Fetch purchase detail for complete invoice data (includes buyerName)
+  const { data: purchaseDetailResponse } = useGetPurchaseDetail(purchaseId);
+  const purchaseDetail = purchaseDetailResponse?.Data;
+
   // Format price helper
   const formatPrice = (price) => {
-    if (!price) return "-";
+    if (price === null || price === undefined) return "-";
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
       currency: "IDR",
@@ -40,19 +49,10 @@ const CardPaketAktif = ({ data }) => {
   };
 
   const handlePrintInvoice = () => {
-    printInvoice({
-      transactionId,
-      buyerName: data?.buyerName || "-",
-      topUpDate: startDate,
-      packageName,
-      totalMuatkoin,
-      bonusMuatkoin: data?.bonusMuatkoin || 0,
-      price: packageDetail?.price || 0,
-      discount: packageDetail?.promo?.discount || 0,
-      paymentMethod: data?.paymentMethod?.name || "-",
-      status: "paid", // Active packages are already paid
-      invoiceType: "credit",
-    });
+    // Use purchaseDetail from hook as single source of truth
+    const invoiceData = transformToPrintInvoiceData(purchaseDetail);
+    // Override status to "paid" since active packages are already paid
+    printInvoice({ ...invoiceData, status: "paid" });
   };
 
   return (
@@ -153,14 +153,14 @@ const CardPaketAktif = ({ data }) => {
             <div className="flex flex-col">
               {packageDetail?.promo && (
                 <span className="text-xs text-neutral-400 line-through">
-                  {formatPrice(packageDetail?.price)}
+                  {formatPrice(
+                    packageDetail?.price + packageDetail?.promo?.discount
+                  )}
                 </span>
               )}
               <span className="text-sm font-medium text-neutral-900">
-                {packageDetail?.promo
-                  ? formatPrice(
-                      packageDetail?.price - packageDetail?.promo?.discount
-                    )
+                {!packageDetail?.promo && !packageDetail?.price
+                  ? "Free"
                   : formatPrice(packageDetail?.price)}
               </span>
             </div>

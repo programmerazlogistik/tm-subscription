@@ -5,7 +5,10 @@ import { useParams, useRouter } from "next/navigation";
 import Button from "@/components/Button/Button";
 import PageTitle from "@/components/PageTitle/PageTitle";
 
-import { useGetPurchaseDetail } from "@/hooks/Payment/use-get-purchase-detail";
+import {
+  transformToPrintInvoiceData,
+  useGetPurchaseDetail,
+} from "@/hooks/Payment/use-get-purchase-detail";
 
 import { printInvoice } from "@/lib/print-invoice";
 
@@ -68,33 +71,9 @@ const DetailPembayaranPage = () => {
   };
 
   const handlePrintInvoice = () => {
-    // Calculate values from data structure for page-level print
-    const pkgDetail = data?.packageDetail || {};
-    const promo = pkgDetail.promo || {};
-
-    // Pricing
-    const originalPrice = data?.originalPrice || data?.price || 0;
-    const finalPrice = data?.price || 0;
-    const discountAmount = originalPrice - finalPrice;
-
-    // Muatkoin
-    const baseMuatkoin = pkgDetail.baseMuatkoin || 0;
-    const bonusMuatkoin = pkgDetail.bonusMuatkoin || promo.bonusMuatkoin || 0;
-    const totalMuatkoin = baseMuatkoin + bonusMuatkoin;
-
-    printInvoice({
-      transactionId: data?.transactionId || "-",
-      buyerName: data?.buyerName || "-",
-      topUpDate: data?.transactionDate,
-      packageName: data?.packageName || "-",
-      totalMuatkoin: totalMuatkoin,
-      bonusMuatkoin: bonusMuatkoin,
-      price: originalPrice,
-      discount: discountAmount,
-      paymentMethod: data?.paymentMethod?.name || "-",
-      status: data?.status || "pending",
-      invoiceType: "credit",
-    });
+    // Use transformToPrintInvoiceData as single source of truth
+    const invoiceData = transformToPrintInvoiceData(data);
+    printInvoice(invoiceData);
   };
 
   if (isLoading) {

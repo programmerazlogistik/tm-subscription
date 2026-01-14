@@ -22,7 +22,7 @@ import {
   RightDrawerTrigger,
 } from "@/components/RightDrawer/RightDrawer";
 
-import { useGetAllTransactions } from "@/hooks/Subscription/use-get-all-transactions";
+import { useGetFailedTransactions } from "@/hooks/Subscription/use-get-failed-transactions";
 
 import { formatDateWIB } from "@/lib/format-date";
 import { cn } from "@/lib/utils";
@@ -122,9 +122,8 @@ const RiwayatPembelianMuatkoin = () => {
     }
   }
 
-  // Fetch transactions
-  const { data: apiResponse, isLoading } = useGetAllTransactions({
-    type: "purchase",
+  // Fetch transactions using failed-transactions API
+  const { data: apiResponse, isLoading } = useGetFailedTransactions({
     page: currentPage,
     limit: perPage,
     search: searchValue,
@@ -133,7 +132,7 @@ const RiwayatPembelianMuatkoin = () => {
     endDate: endDateParam,
   });
 
-  const transactions = apiResponse?.Data?.transactions ?? [];
+  const transactions = apiResponse?.Data?.purchaseHistory ?? [];
   const pagination = apiResponse?.Data?.pagination ?? {
     currentPage: 1,
     totalPages: 1,
@@ -358,7 +357,7 @@ const RiwayatPembelianMuatkoin = () => {
                           {item.transactionId}
                         </span>
                         <span className="text-[10px] font-medium text-[#676767]">
-                          {formatDateWIB(item.date)}
+                          {formatDateWIB(item.transactionDate)}
                         </span>
                       </div>
                     </td>
@@ -381,14 +380,14 @@ const RiwayatPembelianMuatkoin = () => {
                         {item.isUnlimited
                           ? "Unlimited muatkoin"
                           : item.bonusMuatkoin > 0
-                            ? `${item.muatkoinChange} + ${item.bonusMuatkoin} Free muatkoin`
-                            : `${item.muatkoinChange} muatkoin`}
+                            ? `${item.baseMuatkoin} + ${item.bonusMuatkoin} Free muatkoin`
+                            : `${item.baseMuatkoin} muatkoin`}
                       </span>
                     </td>
                     {/* Harga */}
                     <td className="px-4 py-4">
                       <span className="text-xs font-semibold text-[#1B1B1B]">
-                        {formatPrice(item.amount)}
+                        {formatPrice(item.price)}
                       </span>
                     </td>
                     {/* Status */}

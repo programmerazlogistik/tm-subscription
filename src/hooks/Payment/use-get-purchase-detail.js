@@ -18,6 +18,7 @@ export const MOCK_DATA = {
     id: "91d69539-b37d-4150-ad6b-35fd92981cf3",
     transactionId: "INV/202601/SMP/55368",
     transactionDate: "2026-01-06T06:26:23.830Z",
+    buyerName: "Cakra",
     packageName: "coba sekali lagi di ubah",
     packageId: "1e45854b-c0e6-4d92-b079-48ec60b46723",
     packageDetail: {
@@ -115,4 +116,32 @@ export const useGetPurchaseDetail = (purchaseId) => {
       revalidateOnReconnect: false,
     }
   );
+};
+
+/**
+ * Transform API response data to printInvoice format
+ * Single source of truth for invoice data transformation
+ * @param {Object} data - API response data from useGetPurchaseDetail
+ * @returns {Object} - Data formatted for printInvoice function
+ */
+export const transformToPrintInvoiceData = (data) => {
+  const pkgDetail = data?.packageDetail || {};
+  const promo = pkgDetail.promo || {};
+  const originalPrice = data?.originalPrice || data?.price || 0;
+  const finalPrice = data?.price || 0;
+  const baseMuatkoin = pkgDetail.baseMuatkoin || 0;
+  const bonusMuatkoin = pkgDetail.bonusMuatkoin || promo.bonusMuatkoin || 0;
+
+  return {
+    transactionId: data?.transactionId || "-",
+    buyerName: data?.buyerName || "-",
+    topUpDate: data?.transactionDate,
+    packageName: data?.packageName || "-",
+    totalMuatkoin: baseMuatkoin + bonusMuatkoin,
+    bonusMuatkoin,
+    price: originalPrice,
+    discount: originalPrice - finalPrice,
+    paymentMethod: data?.paymentMethod?.name || "-",
+    status: data?.status || "pending",
+  };
 };

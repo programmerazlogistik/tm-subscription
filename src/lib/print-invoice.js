@@ -15,7 +15,6 @@
  * @param {string} invoiceData.status - Payment status: "paid" | "unpaid" | "cancelled"
  * @param {string} invoiceData.validityStart - Subscription start date (for subscription invoices)
  * @param {string} invoiceData.validityEnd - Subscription end date (for subscription invoices)
- * @param {string} invoiceData.invoiceType - Type of invoice: "credit" | "subscription"
  */
 export const printInvoice = (invoiceData) => {
   const {
@@ -31,7 +30,6 @@ export const printInvoice = (invoiceData) => {
     status = "paid", // "paid" | "unpaid" | "cancelled"
     validityStart = null,
     validityEnd = null,
-    invoiceType = "credit", // "credit" | "subscription"
   } = invoiceData || {};
 
   const formatPrice = (price) => {
@@ -122,7 +120,7 @@ export const printInvoice = (invoiceData) => {
 
   // Product detail based on invoice type
   const getProductDetail = () => {
-    if (invoiceType === "subscription" && validityStart && validityEnd) {
+    if (status !== "paid" && validityStart && validityEnd) {
       return `Masa Berlaku : ${formatShortDate(validityStart)} - ${formatShortDate(validityEnd)}`;
     }
     // Credit invoice
@@ -138,9 +136,7 @@ export const printInvoice = (invoiceData) => {
 
   // Date label based on invoice type
   const dateLabel =
-    invoiceType === "subscription"
-      ? "Tanggal Pesanan"
-      : "Tanggal Top-up Credit";
+    status !== "paid" ? "Tanggal Pesanan" : "Tanggal Top-up Credit";
 
   const invoiceHTML = `
     <!DOCTYPE html>

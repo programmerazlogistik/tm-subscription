@@ -37,7 +37,7 @@ const CardDetailPaket = ({ data }) => {
   const tanggal = formatDateWIB(transactionDate);
   const subUser = subUsersIncluded
     ? `(Termasuk ${subUsersIncluded} Sub User)`
-    : "-";
+    : null;
   const durasi = period ? `${period} Hari` : "-";
   const tambahan = additionalMuatkoin || "-";
 

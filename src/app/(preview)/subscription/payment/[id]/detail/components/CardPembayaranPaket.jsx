@@ -9,6 +9,7 @@ import { toast } from "@muatmuat/ui/Toaster";
 import Button from "@/components/Button/Button";
 
 import { useCancelPurchase } from "@/hooks/Payment/use-cancel-purchase";
+import { transformToPrintInvoiceData } from "@/hooks/Payment/use-get-purchase-detail";
 
 import { formatDateWIB } from "@/lib/format-date";
 import { printInvoice } from "@/lib/print-invoice";
@@ -122,33 +123,20 @@ const CardPembayaranPaket = ({ data }) => {
   };
 
   const handlePrintInvoice = () => {
-    // Calculate values from data structure
-    const pkgDetail = data?.packageDetail || {};
-    const promo = pkgDetail.promo || {};
-
-    // Pricing - NOTE: paymentData passes totalPrice, not price
-    const originalPrice = data?.originalPrice || data?.totalPrice || 0;
-    const finalPrice = data?.totalPrice || data?.price || 0;
-    const discountAmount = originalPrice - finalPrice;
-
-    // Muatkoin
-    const baseMuatkoin = pkgDetail.baseMuatkoin || 0;
-    const bonusMuatkoin = pkgDetail.bonusMuatkoin || promo.bonusMuatkoin || 0;
-    const totalMuatkoin = baseMuatkoin + bonusMuatkoin;
-
-    printInvoice({
-      transactionId: data?.transactionId || "-",
-      buyerName: data?.buyerName || "-",
-      topUpDate: data?.transactionDate,
-      packageName: data?.packageName || "-",
-      totalMuatkoin: totalMuatkoin,
-      bonusMuatkoin: bonusMuatkoin,
-      price: originalPrice,
-      discount: discountAmount,
-      paymentMethod: data?.paymentMethod?.name || paymentMethodName || "-",
-      status: data?.status || "pending",
-      invoiceType: "credit",
+    // Use transformToPrintInvoiceData as single source of truth
+    // Transform data props to match the expected format
+    const invoiceData = transformToPrintInvoiceData({
+      transactionId: data?.transactionId,
+      buyerName: data?.buyerName,
+      transactionDate: data?.transactionDate,
+      packageName: data?.packageName,
+      packageDetail: data?.packageDetail,
+      originalPrice: data?.originalPrice,
+      price: data?.totalPrice || data?.price,
+      paymentMethod: { name: data?.paymentMethodName },
+      status: data?.status,
     });
+    printInvoice(invoiceData);
   };
 
   const {

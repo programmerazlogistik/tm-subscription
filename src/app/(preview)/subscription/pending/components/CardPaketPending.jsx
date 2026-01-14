@@ -27,7 +27,7 @@ const CardPaketPending = ({ data }) => {
 
   // Format price helper
   const formatPrice = (amount) => {
-    if (!amount) return "-";
+    if (amount === null || amount === undefined) return "-";
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
       currency: "IDR",
@@ -47,10 +47,11 @@ const CardPaketPending = ({ data }) => {
       ? `${formatMuatkoin(baseMuatkoin)} + ${formatMuatkoin(bonusMuatkoin)} Free muatkoin`
       : `${formatMuatkoin(baseMuatkoin)} muatkoin`;
 
-  // Calculate final price after discount
-  const originalPrice = packageDetail?.price || price;
+  // Price is the final price after discount
+  // Original price = price + discount
+  const finalPrice = packageDetail?.price || price || 0;
   const discount = packageDetail?.promo?.discount || 0;
-  const finalPrice = originalPrice - discount;
+  const originalPrice = finalPrice + discount;
 
   return (
     <div className="flex flex-col rounded-[12px] border border-[#868686] bg-white shadow-muat">
@@ -175,7 +176,9 @@ const CardPaketPending = ({ data }) => {
                 </div>
               )}
               <span className="text-sm font-medium text-neutral-900">
-                {formatPrice(finalPrice)}
+                {!packageDetail?.promo && !finalPrice
+                  ? "Free"
+                  : formatPrice(finalPrice)}
               </span>
             </div>
           </div>

@@ -57,7 +57,7 @@ const PendingSubscriptionPage = () => {
     <div className="min-h-screen bg-white p-6">
       <div className="mx-auto flex w-[944px] flex-col gap-6">
         {/* Banner Saldo */}
-        <SaldoMuatkoin balance={80} maxBalance={120} variant="rectangle" />
+        <SaldoMuatkoin variant="rectangle" />
 
         {/* Header with Back Button */}
         <PageTitle withBack={true} backUrl="/subscription">
