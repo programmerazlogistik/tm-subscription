@@ -153,12 +153,30 @@ const DropdownPeriode = ({
     });
   };
 
-  // Reset values when modal is opened
+  // Populate inputDateCustom when modal is opened
   useEffect(() => {
     if (isPeriode) {
-      resetValue();
+      // If editing an existing custom period, populate the fields
+      if (
+        selected?.value === "custom" &&
+        selected?.start_date &&
+        selected?.end_date
+      ) {
+        setInputDateCustom({
+          status: null,
+          start_date: selected.start_date,
+          end_date: selected.end_date,
+        });
+        setValidate({
+          start_date: false,
+          end_date: false,
+        });
+      } else {
+        // Otherwise, reset to empty for a fresh selection
+        resetValue();
+      }
     }
-  }, [isPeriode]);
+  }, [isPeriode, selected]);
 
   // Add outside click handler in a separate useEffect
   useEffect(() => {

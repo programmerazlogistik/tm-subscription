@@ -93,7 +93,7 @@ const ModalPilihPeriode = ({
 
     const customOption = {
       name: `${inputDateCustom.start_date} - ${inputDateCustom.end_date}`,
-      value: `${inputDateCustom.start_date} - ${inputDateCustom.end_date}`,
+      value: "custom",
       start_date: inputDateCustom.start_date,
       end_date: inputDateCustom.end_date,
       iso_start_date: isoStart,

@@ -80,13 +80,20 @@ const RiwayatPenggunaanMuatkoin = () => {
   // Debounce search value
   const debouncedSearch = useDebounce(searchValue, 500);
 
-  // Calculate dates based on period presets
-  let startDateParam = selectedPeriod?.iso_start_date || "";
-  let endDateParam = selectedPeriod?.iso_end_date || "";
+  // Calculate dates based on period selection
+  let startDateParam = "";
+  let endDateParam = "";
 
-  if (!selectedPeriod?.range && selectedPeriod?.value !== "all") {
+  // Custom period: use iso dates directly from selectedPeriod
+  if (selectedPeriod?.value === "custom" || selectedPeriod?.range) {
+    startDateParam = selectedPeriod?.iso_start_date || "";
+    endDateParam = selectedPeriod?.iso_end_date || "";
+  }
+  // Preset periods: calculate from today
+  else if (selectedPeriod?.value && selectedPeriod?.value !== "all") {
     const today = new Date();
     endDateParam = format(today, "yyyy-MM-dd");
+
     if (selectedPeriod?.value === "today") {
       startDateParam = format(today, "yyyy-MM-dd");
     } else if (selectedPeriod?.value === "30_days") {
@@ -95,6 +102,7 @@ const RiwayatPenggunaanMuatkoin = () => {
       startDateParam = format(subDays(today, 90), "yyyy-MM-dd");
     }
   }
+  // "all" period: no date params needed
 
   // Build usageType filter param
   const usageTypeParam =
