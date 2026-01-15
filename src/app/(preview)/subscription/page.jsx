@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { useTokenActions, useUserActions } from "@muatmuat/lib/auth-adapter";
 
@@ -23,6 +23,7 @@ const Page = () => {
   const searchParams = useSearchParams();
   const { setToken } = useTokenActions();
   const { setUser } = useUserActions();
+  const [isReady, setIsReady] = useState(false);
 
   // Save accessToken and role from query params on every load
   useEffect(() => {
@@ -40,7 +41,15 @@ const Page = () => {
       ? roleMap[envRole] || envRole
       : searchParams.get("role") || "2"; // Default to shipper
     setUser({ role });
+
+    // Mark as ready after setting token and user
+    setIsReady(true);
   }, [searchParams, setToken, setUser]);
+
+  // Wait until token is set to prevent API calls with empty auth
+  if (!isReady) {
+    return null;
+  }
 
   return (
     <div className="font-primary flex w-full flex-col gap-6 p-8 text-neutral-900">

@@ -47,6 +47,10 @@ const LIST_PUBLIC_ROUTES = [
     path: "/agenda-armada-driver",
     method: "exact",
   },
+  {
+    path: "/subscription",
+    method: "startsWith",
+  },
 ];
 
 export const createAxios = (baseURL) => {
