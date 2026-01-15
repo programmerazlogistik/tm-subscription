@@ -23,6 +23,7 @@ import {
 } from "@/components/RightDrawer/RightDrawer";
 
 import { useGetFailedTransactions } from "@/hooks/Subscription/use-get-failed-transactions";
+import { useDebounce } from "@/hooks/use-debounce";
 
 import { formatDateWIB } from "@/lib/format-date";
 import { cn } from "@/lib/utils";
@@ -98,6 +99,9 @@ const RiwayatPembelianMuatkoin = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState(PERIOD_OPTIONS[0]);
 
+  // Debounce search value to prevent API call on every keystroke
+  const debouncedSearch = useDebounce(searchValue, 500);
+
   // Build status filter param
   const statusParam =
     selectedFilters.length > 0 ? selectedFilters.join(",") : "";
@@ -122,7 +126,7 @@ const RiwayatPembelianMuatkoin = () => {
   const { data: apiResponse, isLoading } = useGetFailedTransactions({
     page: currentPage,
     limit: perPage,
-    search: searchValue,
+    search: debouncedSearch,
     status: statusParam,
     startDate: startDateParam,
     endDate: endDateParam,
@@ -172,7 +176,7 @@ const RiwayatPembelianMuatkoin = () => {
 
   // Check if any filters are applied
   const hasFiltersApplied =
-    searchValue.length > 0 ||
+    debouncedSearch.length > 0 ||
     selectedFilters.length > 0 ||
     selectedPeriod?.value !== "all";
 
